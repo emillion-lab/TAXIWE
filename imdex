@@ -6,810 +6,1380 @@
 <title>TaxiMatch Sofia</title>
 <style>
 :root{
-  --bg:#0a0a0a;--surface:#141414;--card:#1c1c1c;--border:#2a2a2a;
-  --yellow:#f5c518;--yellow-dim:rgba(245,197,24,0.12);--yellow-glow:rgba(245,197,24,0.25);
-  --text:#f0f0f0;--muted:#888;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;
-  --orange:#f97316;
+  --bg:#080808;--s1:#111;--s2:#181818;--s3:#222;--s4:#2a2a2a;
+  --border:#2c2c2c;--border2:#3a3a3a;
+  --y:#f5c518;--yd:rgba(245,197,24,.13);--yg:rgba(245,197,24,.22);
+  --tx:#f0f0f0;--mu:#777;--mu2:#555;
+  --gr:#22c55e;--rd:#ef4444;--bl:#3b82f6;--or:#f97316;--pu:#a855f7;--cy:#06b6d4;
+  --rad:10px;--rads:6px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+html,body{height:100%}
+body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
 
-/* ── TOP BAR ── */
-.topbar{background:#000;border-bottom:3px solid var(--yellow);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{font-size:26px;line-height:1}
-.logo-text{font-size:18px;font-weight:900;letter-spacing:-0.5px}
-.logo-text span{color:var(--yellow)}
-.mode-switch{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.mode-btn{padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.15s;white-space:nowrap}
-.mode-btn.active{background:var(--yellow);color:#000}
+/* TOPBAR */
+.topbar{background:#000;border-bottom:3px solid var(--y);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;z-index:50}
+.logo{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.logo-ico{font-size:24px}
+.logo-tx{font-size:17px;font-weight:900;letter-spacing:-.5px}
+.logo-tx b{color:var(--y)}
+.tabs{display:flex;gap:2px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:2px}
+.tab{padding:5px 12px;font-size:12px;font-weight:800;border-radius:6px;cursor:pointer;border:none;background:transparent;color:var(--mu);transition:.15s;white-space:nowrap;position:relative}
+.tab.on{background:var(--y);color:#000}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--rd);position:absolute;top:3px;right:3px;display:none;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── PAGES ── */
-.page{display:none;flex:1;flex-direction:column}
-.page.active{display:flex}
+/* PAGES */
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
+.page.on{display:flex}
+.scroll{flex:1;overflow-y:auto;padding:12px 14px 90px;display:flex;flex-direction:column;gap:10px}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* ── SECTION HEADER ── */
-.sec-header{padding:16px 16px 8px;border-bottom:1px solid var(--border)}
-.sec-title{font-size:20px;font-weight:900;color:var(--yellow);letter-spacing:-0.5px}
-.sec-sub{font-size:12px;color:var(--muted);margin-top:2px}
+/* PAGE HEADER */
+.pg-hd{padding:11px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.pg-title{font-size:18px;font-weight:900;color:var(--y);letter-spacing:-.4px}
+.pg-sub{font-size:11px;color:var(--mu);margin-top:1px}
 
-/* ── SEARCH (passenger) ── */
-.search-panel{padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-.search-row{display:flex;gap:8px;flex-wrap:wrap}
-.filter-chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:.15s;white-space:nowrap;user-select:none}
-.filter-chip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
-.filter-chip:hover{border-color:var(--muted)}
-.district-sel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;outline:none}
-.district-sel:focus{border-color:var(--yellow)}
+/* FILTER BAR */
+.fbar{padding:8px 14px;background:var(--s1);border-bottom:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:7px}
+.frow{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.flbl{font-size:10px;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.chip{background:var(--s3);border:1px solid var(--border);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--mu);transition:.12s;white-space:nowrap;user-select:none}
+.chip:hover{border-color:var(--border2)}
+.chip.on{border-color:var(--y);color:var(--y);background:var(--yd)}
+select.fsel{background:var(--s3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--tx);cursor:pointer;outline:none;max-width:160px}
+select.fsel:focus{border-color:var(--y)}
 
-/* ── DRIVER CARDS ── */
-.cards-scroll{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
-.driver-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.15s;position:relative}
-.driver-card:hover{border-color:var(--yellow);background:#212121}
-.dc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.dc-plate{background:var(--yellow);color:#000;font-family:monospace;font-size:18px;font-weight:900;padding:3px 10px;border-radius:6px;letter-spacing:1px;white-space:nowrap}
-.dc-op{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
-.dc-status{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.dc-online{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px}
-.online-yes{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
-.online-no{background:rgba(136,136,136,0.1);color:var(--muted);border:1px solid var(--border)}
-.dc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid}
-.tag-smoke{background:rgba(249,115,22,0.12);color:var(--orange);border-color:rgba(249,115,22,0.3)}
-.tag-nosm{background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.25)}
-.tag-pet{background:rgba(59,130,246,0.1);color:var(--blue);border-color:rgba(59,130,246,0.25)}
-.tag-music{background:rgba(168,85,247,0.1);color:#a855f7;border-color:rgba(168,85,247,0.25)}
-.tag-quiet{background:rgba(136,136,136,0.1);color:var(--muted);border-color:var(--border)}
-.tag-child{background:rgba(245,197,24,0.1);color:var(--yellow);border-color:rgba(245,197,24,0.25)}
-.tag-card{background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.25)}
-.tag-cash{background:rgba(136,136,136,0.1);color:var(--muted);border-color:var(--border)}
-.tag-minivan{background:rgba(59,130,246,0.1);color:var(--blue);border-color:rgba(59,130,246,0.25)}
-.dc-bio{font-size:12px;color:#bbb;line-height:1.5;margin-bottom:6px}
-.dc-hours{font-size:11px;color:var(--muted);font-weight:600}
-.dc-districts{font-size:11px;color:var(--yellow);font-weight:700;margin-top:3px}
-.dc-model{font-size:12px;color:var(--muted);font-weight:600}
+/* DRIVER CARDS */
+.dcard{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad);padding:13px;cursor:pointer;transition:.12s;position:relative;overflow:hidden}
+.dcard:hover{border-color:var(--yg);background:var(--s3)}
+.dcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--border2)}
+.dcard.is-online::before{background:var(--gr)}
+.dc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:9px}
+.plate{font-family:monospace;font-weight:900;background:var(--y);color:#000;padding:3px 8px;border-radius:5px;letter-spacing:.8px;white-space:nowrap;font-size:16px}
+.plate.sm{font-size:13px;padding:2px 6px}
+.dc-meta{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.dc-op{font-size:10px;color:var(--mu);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-car{font-size:11px;color:var(--mu2)}
+.spill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.sp-on{background:rgba(34,197,94,.12);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
+.sp-off{background:rgba(119,119,119,.08);color:var(--mu);border:1px solid var(--border)}
+.sp-pend{background:rgba(245,197,24,.12);color:var(--y);border:1px solid rgba(245,197,24,.3)}
+.sp-rej{background:rgba(239,68,68,.1);color:var(--rd);border:1px solid rgba(239,68,68,.25)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}
+.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;border:1px solid}
+.ty{background:var(--yd);color:var(--y);border-color:rgba(245,197,24,.3)}
+.tg{background:rgba(34,197,94,.08);color:var(--gr);border-color:rgba(34,197,94,.25)}
+.tb{background:rgba(59,130,246,.08);color:var(--bl);border-color:rgba(59,130,246,.25)}
+.to{background:rgba(249,115,22,.08);color:var(--or);border-color:rgba(249,115,22,.25)}
+.tp{background:rgba(168,85,247,.08);color:var(--pu);border-color:rgba(168,85,247,.25)}
+.tmu{background:rgba(119,119,119,.06);color:var(--mu);border-color:var(--border)}
+.tc{background:rgba(6,182,212,.08);color:var(--cy);border-color:rgba(6,182,212,.25)}
+.bio{font-size:12px;color:#bbb;line-height:1.5;margin-bottom:6px}
+.dc-ft{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--mu);margin-top:4px}
+.dc-hrs{color:var(--mu)}
+.dc-dst{color:var(--y);font-weight:700}
+.dc-carinfo{font-size:11px;color:var(--cy);font-weight:600;margin-bottom:5px}
 
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty-icon{font-size:48px;margin-bottom:12px}
-.empty-msg{font-size:14px;font-weight:600}
+/* ORDER BUTTON on card */
+.order-btn-card{position:absolute;bottom:12px;right:12px;background:var(--y);color:#000;border:none;border-radius:var(--rads);padding:6px 12px;font-size:12px;font-weight:900;cursor:pointer;transition:.12s}
+.order-btn-card:hover{background:#ffd700}
 
-/* ── DRIVER PAGE ── */
-.driver-page-inner{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
-
-/* ── VERIFY BOX ── */
-.verify-box{background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-.verify-box.verified{border:2px solid var(--green);background:rgba(34,197,94,0.04)}
-.verify-box.verified .verify-title{color:var(--green)}
-.verify-title{font-size:16px;font-weight:900;color:var(--yellow)}
-.verify-sub{font-size:12px;color:var(--muted);line-height:1.5}
-.verify-result{font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);width:100%;text-align:center}
-.verify-result.err{background:rgba(239,68,68,0.1);color:var(--red);border-color:rgba(239,68,68,0.3)}
-
-/* ── FORM ELEMENTS ── */
-.form-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
-.form-title{font-size:12px;font-weight:900;color:var(--yellow);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
-.form-row{display:flex;flex-direction:column;gap:4px}
-.form-label{font-size:11px;color:var(--muted);font-weight:700}
-.form-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;width:100%;font-family:inherit}
-.form-input:focus{border-color:var(--yellow)}
-textarea.form-input{resize:vertical;min-height:70px}
-.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
-.fchip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
-.fchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
-.hour-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
-.hchip{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 2px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
-.hchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
-.district-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.dchip{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 4px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
-.dchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
-.toggle-label{font-size:13px;font-weight:700;color:var(--text)}
-.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;position:relative;transition:.2s;border:none;flex-shrink:0}
-.toggle.on{background:var(--yellow)}
-.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
-.toggle.on::after{left:23px;background:#000}
-
-/* ── BUTTONS ── */
-.btn{padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;border:none;transition:.15s;width:100%;text-align:center}
-.btn-primary{background:var(--yellow);color:#000}
-.btn-primary:hover{background:#ffd700}
-.btn-primary:active{background:#e6b800}
-.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
-.btn-secondary:hover{border-color:var(--yellow);color:var(--yellow)}
-.btn-danger{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
-.btn-sm{padding:7px 14px;font-size:13px;width:auto;border-radius:8px}
-.plate-input{font-family:monospace;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;text-align:center}
-
-/* ── LOADING ── */
-.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(245,197,24,0.3);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+/* EMPTY / LOADING */
+.empty{text-align:center;padding:50px 20px;color:var(--mu)}
+.empty-ico{font-size:44px;margin-bottom:10px}
+.empty-msg{font-size:13px;font-weight:600;line-height:1.6}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(245,197,24,.2);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--muted);font-size:13px;font-weight:600}
+.loading{display:flex;align-items:center;justify-content:center;padding:30px;color:var(--mu);font-size:13px;font-weight:600}
 
-/* ── MODAL / OVERLAY ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:16px}
-.overlay.hidden{display:none}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:16px 16px 12px 12px;padding:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
-.modal-title{font-size:18px;font-weight:900;color:var(--yellow)}
-.modal-plate{font-family:monospace;font-size:22px;font-weight:900;background:var(--yellow);color:#000;padding:4px 12px;border-radius:6px;display:inline-block;letter-spacing:2px}
-.modal-section{display:flex;flex-direction:column;gap:6px}
-.modal-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.modal-val{font-size:14px;font-weight:600;line-height:1.5}
-.modal-tags{display:flex;flex-wrap:wrap;gap:5px}
-.modal-close{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;color:var(--text);width:100%}
-.modal-close:hover{border-color:var(--yellow);color:var(--yellow)}
+/* FORM ELEMENTS */
+.fsec{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad);padding:13px;display:flex;flex-direction:column;gap:10px}
+.fsec-title{font-size:11px;font-weight:900;color:var(--y);text-transform:uppercase;letter-spacing:.5px}
+.frow2{display:flex;flex-direction:column;gap:3px}
+.flabel{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.finput{background:var(--s1);border:1px solid var(--border);border-radius:var(--rads);padding:9px 11px;color:var(--tx);font-size:14px;outline:none;width:100%;font-family:inherit;transition:.12s}
+.finput:focus{border-color:var(--y)}
+.finput.mono{font-family:monospace;font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:2px;text-align:center}
+textarea.finput{resize:vertical;min-height:65px;font-size:13px}
+.chips2{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.pc{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;color:var(--mu);transition:.12s;user-select:none}
+.pc.on{border-color:var(--y);color:var(--y);background:var(--yd)}
+.pc:hover:not(.on){border-color:var(--border2)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.gc{background:var(--s1);border:1px solid var(--border);border-radius:var(--rads);padding:6px 4px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;color:var(--mu);transition:.12s;user-select:none;line-height:1.3}
+.gc.on{border-color:var(--y);color:var(--y);background:var(--yd)}
+.tog-row{display:flex;justify-content:space-between;align-items:center}
+.tog-lbl{font-size:13px;font-weight:700}
+.tog{width:42px;height:23px;background:var(--border2);border-radius:12px;cursor:pointer;position:relative;transition:.2s;border:none;flex-shrink:0}
+.tog.on{background:var(--y)}
+.tog::after{content:'';position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.tog.on::after{left:22px;background:#000}
 
-/* ── STATUS DOTS ── */
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
-.dot-green{background:var(--green)}
-.dot-gray{background:var(--muted)}
+/* BUTTONS */
+.btn{display:block;width:100%;padding:12px;border-radius:var(--rad);font-size:14px;font-weight:900;cursor:pointer;border:none;transition:.15s;text-align:center}
+.btn-y{background:var(--y);color:#000}
+.btn-y:hover{background:#ffd700}
+.btn-y:active{background:#e6b800}
+.btn-ghost{background:var(--s2);border:1px solid var(--border);color:var(--tx)}
+.btn-ghost:hover{border-color:var(--y);color:var(--y)}
+.btn-rd{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--rd)}
+.btn-gr{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--gr)}
+.btn-bl{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--bl)}
+.btn-sm{padding:6px 13px;font-size:12px;width:auto;border-radius:var(--rads)}
+.btn-xs{padding:4px 9px;font-size:11px;width:auto;border-radius:5px}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* VERIFY BOX */
+.vbox{background:var(--s2);border:2px dashed var(--border2);border-radius:var(--rad);padding:20px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:11px}
+.vbox.ok{border:2px solid var(--gr);background:rgba(34,197,94,.03)}
+.vbox-ico{font-size:36px}
+.vbox-title{font-size:16px;font-weight:900;color:var(--y)}
+.vbox-sub{font-size:12px;color:var(--mu);line-height:1.5}
+.vr{width:100%;padding:9px 13px;border-radius:var(--rads);font-size:12px;font-weight:700;text-align:center}
+.vr-ok{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
+.vr-err{background:rgba(239,68,68,.1);color:var(--rd);border:1px solid rgba(239,68,68,.3)}
+.vr-pend{background:rgba(245,197,24,.1);color:var(--y);border:1px solid rgba(245,197,24,.3)}
+
+/* NOTICE */
+.notice{padding:10px 13px;border-radius:var(--rads);font-size:12px;font-weight:600;line-height:1.5}
+.n-ok{background:rgba(34,197,94,.08);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+.n-warn{background:rgba(245,197,24,.08);color:var(--y);border:1px solid rgba(245,197,24,.2)}
+.n-err{background:rgba(239,68,68,.08);color:var(--rd);border:1px solid rgba(239,68,68,.2)}
+.n-info{background:rgba(59,130,246,.08);color:var(--bl);border:1px solid rgba(59,130,246,.2)}
+.n-pu{background:rgba(168,85,247,.08);color:var(--pu);border:1px solid rgba(168,85,247,.2)}
+
+/* MODAL / OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:10px}
+.overlay.hide{display:none}
+.modal{background:var(--s2);border:1px solid var(--border2);border-radius:14px;padding:16px;width:100%;max-width:520px;max-height:93vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.modal-title{font-size:17px;font-weight:900;color:var(--y)}
+.mrow{display:flex;flex-direction:column;gap:4px}
+.mlbl{font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.mval{font-size:13px;font-weight:600;line-height:1.5}
+
+/* ORDER FLOW inside modal */
+.order-step{display:flex;flex-direction:column;gap:10px}
+.price-calc{background:var(--s1);border:1px solid var(--y);border-radius:var(--rad);padding:13px;display:flex;flex-direction:column;gap:7px}
+.price-row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.price-row .lbl{color:var(--mu)}
+.price-row .val{font-weight:900;color:var(--tx)}
+.price-row.total .val{font-size:18px;color:var(--y)}
+.price-row.commission .val{color:var(--gr);font-size:12px}
+.divider{border:none;border-top:1px solid var(--border);margin:2px 0}
+.revolut-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#191c4a,#2c2fd4);border:none;border-radius:var(--rad);padding:14px;font-size:15px;font-weight:900;color:#fff;cursor:pointer;transition:.15s;text-decoration:none;width:100%}
+.revolut-btn:hover{opacity:.9}
+.revolut-btn .rev-ico{font-size:20px}
+.booking-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.book-opt{background:var(--s1);border:1px solid var(--border);border-radius:var(--rads);padding:8px 4px;text-align:center;cursor:pointer;transition:.12s}
+.book-opt:hover{border-color:var(--border2)}
+.book-opt.on{border-color:var(--y);background:var(--yd)}
+.book-opt .bo-price{font-size:15px;font-weight:900;color:var(--y)}
+.book-opt.on .bo-price{color:var(--y)}
+.book-opt .bo-label{font-size:10px;color:var(--mu);font-weight:600;margin-top:2px}
+
+/* REQUESTS (driver side) */
+.req-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad);padding:12px;display:flex;flex-direction:column;gap:8px}
+.req-card.new-req{border-color:rgba(245,197,24,.4);background:rgba(245,197,24,.03)}
+.req-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.req-from{font-size:13px;font-weight:700}
+.req-detail{font-size:11px;color:var(--mu)}
+.req-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ADMIN */
+.adm-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad);padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.adm-card.pend{border-color:rgba(245,197,24,.35)}
+.adm-card.approved{border-color:rgba(34,197,94,.25)}
+.adm-card.rejected{border-color:rgba(239,68,68,.2);opacity:.65}
+.adm-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.adm-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.adm-name{font-size:13px;font-weight:700}
+.adm-det{font-size:11px;color:var(--mu)}
+.adm-actions{display:flex;gap:5px;flex-wrap:wrap}
+.stat-box{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad);padding:10px;text-align:center}
+.stat-val{font-size:22px;font-weight:900}
+.stat-lbl{font-size:10px;color:var(--mu);font-weight:700;margin-top:2px}
+
+/* COMMISSION TRACKER */
+.comm-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--s1);border-radius:var(--rads);border:1px solid var(--border);font-size:12px}
+.comm-plate{font-family:monospace;font-weight:900;color:var(--y)}
+.comm-amount{font-weight:900;color:var(--gr)}
+.comm-status{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px}
+.cs-paid{background:rgba(34,197,94,.12);color:var(--gr);border:1px solid rgba(34,197,94,.25)}
+.cs-pend{background:rgba(245,197,24,.1);color:var(--y);border:1px solid rgba(245,197,24,.25)}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="logo">
-    <div class="logo-icon">🚕</div>
-    <div class="logo-text">Taxi<span>Match</span> Sofia</div>
+  <div class="logo" onclick="logoTap()">
+    <div class="logo-ico">🚕</div>
+    <div class="logo-tx">Taxi<b>Match</b></div>
   </div>
-  <div class="mode-switch">
-    <button class="mode-btn active" id="btnPassenger" onclick="switchMode('passenger')">🔍 Пътник</button>
-    <button class="mode-btn" id="btnDriver" onclick="switchMode('driver')">🚕 Шофьор</button>
+  <div class="tabs">
+    <button class="tab on" id="tPass" onclick="goPage('pass')">🔍 Намери</button>
+    <button class="tab" id="tDrv" onclick="goPage('drv')">🚕 Шофьор</button>
+    <button class="tab" id="tAdm" onclick="goPage('adm')">⚙️<span class="notif-dot" id="admDot"></span></button>
   </div>
 </div>
 
-<!-- ══════════════ PASSENGER PAGE ══════════════ -->
-<div class="page active" id="pagePassenger">
-  <div class="sec-header">
-    <div class="sec-title">Намери своето такси</div>
-    <div class="sec-sub">Само регистрирани шофьори от официалния регистър</div>
+<!-- ══ PASSENGER PAGE ══ -->
+<div class="page on" id="pagePass">
+  <div class="pg-hd">
+    <div class="pg-title">Намери такси</div>
+    <div class="pg-sub">Само верифицирани шофьори от официалния регистър на ИААА</div>
   </div>
-
-  <div class="search-panel">
-    <div class="search-row" id="smokeFilters">
-      <div class="filter-chip" data-f="smoke_ok" onclick="toggleFilter(this)">🚬 Пушач ОК</div>
-      <div class="filter-chip" data-f="no_smoke" onclick="toggleFilter(this)">🚭 Непушач</div>
-      <div class="filter-chip" data-f="pet_ok" onclick="toggleFilter(this)">🐾 Животни ОК</div>
-      <div class="filter-chip" data-f="child_seat" onclick="toggleFilter(this)">👶 Детско</div>
-      <div class="filter-chip" data-f="card_pay" onclick="toggleFilter(this)">💳 Карта</div>
-      <div class="filter-chip" data-f="minivan" onclick="toggleFilter(this)">🚐 Ван</div>
-      <div class="filter-chip" data-f="quiet" onclick="toggleFilter(this)">🔇 Тихо</div>
-      <div class="filter-chip" data-f="online_now" onclick="toggleFilter(this)">🟢 В момента</div>
+  <div class="fbar">
+    <div class="frow">
+      <span class="flbl">Комфорт:</span>
+      <div class="chip" data-f="smoke" onclick="tF(this)">🚬 Пушене</div>
+      <div class="chip" data-f="alcohol" onclick="tF(this)">🍺 Алкохол</div>
+      <div class="chip" data-f="pet" onclick="tF(this)">🐾 Животни</div>
+      <div class="chip" data-f="child" onclick="tF(this)">👶 Детско</div>
+      <div class="chip" data-f="card" onclick="tF(this)">💳 Карта</div>
+      <div class="chip" data-f="english" onclick="tF(this)">🇬🇧 EN</div>
     </div>
-    <div class="search-row">
-      <select class="district-sel" id="districtFilter" onchange="renderCards()">
-        <option value="">📍 Всички райони</option>
-        <option>Подуяне</option><option>Слатина</option><option>Красно село</option>
-        <option>Надежда</option><option>Люлин</option><option>Студентски</option>
-        <option>Триадица</option><option>Средец</option><option>Сердика</option>
-        <option>Искър</option><option>Младост</option><option>Витоша</option>
-        <option>Панчарево</option><option>Банкя</option><option>Лозенец</option>
-        <option>Изгрев</option><option>Оборище</option><option>Илинден</option>
-        <option>Овча купел</option><option>Красна поляна</option><option>Нови Искър</option>
-        <option>Кремиковци</option><option>Връбница</option><option>Военна рампа</option>
+    <div class="frow">
+      <span class="flbl">Кола:</span>
+      <div class="chip" data-f="comfort" onclick="tF(this)">🛋 Комфорт</div>
+      <div class="chip" data-f="legroom" onclick="tF(this)">🦵 Място за крака</div>
+      <div class="chip" data-f="boot_big" onclick="tF(this)">🧳 Голям багаж</div>
+      <div class="chip" data-f="van" onclick="tF(this)">🚐 Ван</div>
+    </div>
+    <div class="frow">
+      <span class="flbl">Марка:</span>
+      <select class="fsel" id="brandFlt" onchange="renderPass()">
+        <option value="">Всички</option>
       </select>
+      <span class="flbl" style="margin-left:4px">Район:</span>
+      <select class="fsel" id="distFlt" onchange="renderPass()">
+        <option value="">Всички</option>
+      </select>
+      <div class="chip" data-f="online_now" onclick="tF(this)">🟢 Онлайн</div>
     </div>
   </div>
-
-  <div class="cards-scroll" id="cardsScroll">
-    <div class="loading-row" id="loadingMsg"><div class="spinner"></div>Зареждане на профили…</div>
+  <div class="scroll" id="passScroll">
+    <div class="loading" id="passLoad"><div class="spin"></div>Зареждане…</div>
   </div>
 </div>
 
-<!-- ══════════════ DRIVER PAGE ══════════════ -->
-<div class="page" id="pageDriver">
-  <div class="sec-header">
-    <div class="sec-title">Моят профил</div>
-    <div class="sec-sub">Управлявай видимостта си за пътници</div>
-  </div>
+<!-- ══ DRIVER PAGE ══ -->
+<div class="page" id="pageDrv">
+  <div class="scroll" id="drvScroll" style="padding-top:14px">
 
-  <div class="driver-page-inner" id="driverInner">
-
-    <!-- STEP 1: Verify -->
-    <div id="stepVerify">
-      <div class="verify-box" id="verifyBox">
-        <div style="font-size:36px">🪪</div>
-        <div class="verify-title">Верификация на шофьор</div>
-        <div class="verify-sub">Въведи регистрационния номер на таксито, за да потвърдиш самоличността си спрямо официалния регистър.</div>
-        <input class="form-input plate-input" id="verifyPlate" placeholder="СО 1234 АВ" maxlength="12"
-          oninput="this.value=this.value.toUpperCase().replace(/[^А-ЯA-Z0-9]/g,'')" style="max-width:220px"/>
-        <button class="btn btn-primary btn-sm" onclick="verifyPlate()" id="verifyBtn">Провери →</button>
-        <div id="verifyResult" style="display:none"></div>
+    <!-- Step 1: verify -->
+    <div id="drvS1">
+      <div class="vbox" id="vbox">
+        <div class="vbox-ico">🪪</div>
+        <div class="vbox-title">Регистрация на шофьор</div>
+        <div class="vbox-sub">Въведи рег. номер на таксито — ще се провери срещу официалния регистър на ИААА. Молбата отива за одобрение от администратора.</div>
+        <input class="finput mono" id="vPlate" placeholder="СО1234АВ" maxlength="12"
+          oninput="this.value=this.value.toUpperCase().replace(/[^А-ЯA-Z0-9]/g,'')"/>
+        <div class="frow2" style="width:100%;text-align:left">
+          <div class="flabel">Телефон (Viber) за контакт с администратора</div>
+          <input class="finput" id="vPhone" placeholder="+359 8X XXX XXXX" type="tel"/>
+        </div>
+        <div id="vResult" style="display:none;width:100%"></div>
+        <button class="btn btn-y" id="vBtn" onclick="doVerify()">Провери и изпрати молба →</button>
       </div>
     </div>
 
-    <!-- STEP 2: Profile form (shown after verify) -->
-    <div id="stepProfile" style="display:none;flex-direction:column;gap:14px">
+    <!-- Step 2: pending -->
+    <div id="drvS2" style="display:none">
+      <div class="vbox">
+        <div class="vbox-ico">⏳</div>
+        <div class="vbox-title">Молбата е изпратена!</div>
+        <div id="pendingMsg" class="vbox-sub"></div>
+        <div class="notice n-warn">📱 Изпрати снимка на таксиметровото разрешително по Viber за потвърждение на самоличността.</div>
+        <button class="btn btn-ghost btn-sm" onclick="drvLogout()">← Назад</button>
+      </div>
+    </div>
 
-      <!-- verified badge -->
-      <div class="verify-box verified" id="verifiedBadge">
-        <div style="font-size:28px">✅</div>
-        <div class="verify-title" id="verifiedTitle">Верифициран шофьор</div>
-        <div id="verifiedPlateDisplay" style="font-size:13px;color:var(--muted);font-weight:600"></div>
+    <!-- Step 3: profile editor -->
+    <div id="drvS3" style="display:none;flex-direction:column;gap:12px">
+
+      <div class="vbox ok" style="padding:13px">
+        <div style="font-size:26px">✅</div>
+        <div class="vbox-title" id="drvBadgeTitle"></div>
+        <div style="font-size:11px;color:var(--mu)" id="drvBadgeSub"></div>
+      </div>
+
+      <!-- Incoming requests -->
+      <div id="drvRequestsSection" style="display:none">
+        <div style="font-size:12px;font-weight:900;color:var(--y);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">📨 Нови поръчки</div>
+        <div id="drvRequests"></div>
+      </div>
+
+      <!-- Commission tracker -->
+      <div class="fsec" id="drvCommSection" style="display:none">
+        <div class="fsec-title">💰 Моите комисионни</div>
+        <div id="drvCommList"></div>
+        <div style="font-size:11px;color:var(--mu);margin-top:4px" id="drvCommTotal"></div>
       </div>
 
       <!-- Online toggle -->
-      <div class="form-section">
-        <div class="form-title">Видимост</div>
-        <div class="toggle-row">
-          <span class="toggle-label">Показвай ме на пътници</span>
-          <button class="toggle" id="toggleOnline" onclick="toggleOnline()"></button>
+      <div class="fsec">
+        <div class="fsec-title">Видимост</div>
+        <div class="tog-row">
+          <span class="tog-lbl">Показвай ме на пътници</span>
+          <button class="tog" id="togOnline" onclick="toggleOnline()"></button>
         </div>
       </div>
 
-      <!-- About -->
-      <div class="form-section">
-        <div class="form-title">За теб</div>
-        <div class="form-row">
-          <div class="form-label">Кратко представяне (видимо за пътници)</div>
-          <textarea class="form-input" id="fBio" placeholder="Напр: Опитен шофьор с 10 години стаж. Спокоен и точен. Няма проблем с пушещи клиенти…" rows="3"></textarea>
+      <!-- Bio -->
+      <div class="fsec">
+        <div class="fsec-title">Представяне</div>
+        <textarea class="finput" id="fBio" rows="3" placeholder="Напр: 12 години стаж, тих и точен. Нямам проблем с пушещи клиенти или животни. Говоря английски…"></textarea>
+      </div>
+
+      <!-- Car details -->
+      <div class="fsec">
+        <div class="fsec-title">🚗 Автомобил</div>
+        <div class="frow2">
+          <div class="flabel">Марка</div>
+          <select class="finput" id="fCarBrand" onchange="updateModelList()">
+            <option value="">— Избери марка —</option>
+          </select>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Модел (или въведи ръчно)</div>
+          <input class="finput" id="fCarModel" placeholder="Напр: Superb, E-Class, 520d…"/>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Година (незадължително)</div>
+          <input class="finput" id="fCarYear" placeholder="напр. 2019" type="number" min="1990" max="2026"/>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Описание на комфорта (задна седалка)</div>
+          <textarea class="finput" id="fCarComfort" rows="2" placeholder="Напр: много място за крака, кожени седалки, климатик зона, зарядно USB-C…"></textarea>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Размер на багажника</div>
+          <div class="chips2">
+            <div class="pc" data-p="boot_s" onclick="tPex(this,'boot')">📦 до 300л</div>
+            <div class="pc" data-p="boot_m" onclick="tPex(this,'boot')">🧳 300–500л</div>
+            <div class="pc" data-p="boot_l" onclick="tPex(this,'boot')">🧳🧳 500–700л</div>
+            <div class="pc" data-p="boot_xl" onclick="tPex(this,'boot')">🧳🧳🧳 700+л</div>
+          </div>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Тип кола</div>
+          <div class="chips2">
+            <div class="pc" data-p="size_s" onclick="tPex(this,'size')">🚗 Малка</div>
+            <div class="pc" data-p="size_m" onclick="tPex(this,'size')">🚙 Средна/Комби</div>
+            <div class="pc" data-p="size_l" onclick="tPex(this,'size')">🚐 Ван/Минибус</div>
+          </div>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Специален комфорт</div>
+          <div class="chips2">
+            <div class="pc" data-p="comfort" onclick="tP(this)">🛋 Бизнес/Луксозна</div>
+            <div class="pc" data-p="legroom" onclick="tP(this)">🦵 Много място за крака</div>
+            <div class="pc" data-p="leather" onclick="tP(this)">💺 Кожен салон</div>
+            <div class="pc" data-p="climate" onclick="tP(this)">❄️ Климатик зона</div>
+            <div class="pc" data-p="usb" onclick="tP(this)">🔌 USB зарядно</div>
+            <div class="pc" data-p="wifi" onclick="tP(this)">📶 WiFi</div>
+          </div>
         </div>
       </div>
 
-      <!-- Preferences -->
-      <div class="form-section">
-        <div class="form-title">Предпочитания / Оборудване</div>
-
-        <div class="form-row">
-          <div class="form-label">Пушене в колата</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="smoke_ok" onclick="togglePref(this)">🚬 Пушач ОК</div>
-            <div class="fchip" data-pref="no_smoke" onclick="togglePref(this)">🚭 Непушач</div>
-            <div class="fchip" data-pref="smoke_outside" onclick="togglePref(this)">⏸ Само пауза</div>
+      <!-- Rules -->
+      <div class="fsec">
+        <div class="fsec-title">Правила в колата</div>
+        <div class="frow2">
+          <div class="flabel">Пушене</div>
+          <div class="chips2">
+            <div class="pc" data-p="smoke_yes" onclick="tPex(this,'smoke')">🚬 Разрешено</div>
+            <div class="pc" data-p="smoke_pause" onclick="tPex(this,'smoke')">⏸ Само на пауза</div>
+            <div class="pc" data-p="smoke_no" onclick="tPex(this,'smoke')">🚭 Забранено</div>
           </div>
         </div>
-
-        <div class="form-row">
-          <div class="form-label">Животни</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="pet_ok" onclick="togglePref(this)">🐾 Домашни любимци ОК</div>
-            <div class="fchip" data-pref="no_pet" onclick="togglePref(this)">🚫 Без животни</div>
+        <div class="frow2">
+          <div class="flabel">Алкохол (пасажери)</div>
+          <div class="chips2">
+            <div class="pc" data-p="alc_yes" onclick="tPex(this,'alc')">🍺 Позволен</div>
+            <div class="pc" data-p="alc_no" onclick="tPex(this,'alc')">🚫 Не</div>
           </div>
         </div>
-
-        <div class="form-row">
-          <div class="form-label">Музика</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="music_pop" onclick="togglePref(this)">🎵 Поп/Чалга</div>
-            <div class="fchip" data-pref="music_radio" onclick="togglePref(this)">📻 Радио</div>
-            <div class="fchip" data-pref="music_client" onclick="togglePref(this)">🎧 По желание</div>
-            <div class="fchip" data-pref="quiet" onclick="togglePref(this)">🔇 Тихо</div>
+        <div class="frow2">
+          <div class="flabel">Животни</div>
+          <div class="chips2">
+            <div class="pc" data-p="pet_yes" onclick="tPex(this,'pet')">🐾 Позволени</div>
+            <div class="pc" data-p="pet_no" onclick="tPex(this,'pet')">🚫 Не</div>
           </div>
         </div>
-
-        <div class="form-row">
-          <div class="form-label">Допълнително</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="child_seat" onclick="togglePref(this)">👶 Детско столче</div>
-            <div class="fchip" data-pref="card_pay" onclick="togglePref(this)">💳 Плащане с карта</div>
-            <div class="fchip" data-pref="minivan" onclick="togglePref(this)">🚐 Ван/Повече място</div>
-            <div class="fchip" data-pref="english" onclick="togglePref(this)">🇬🇧 Говоря английски</div>
-            <div class="fchip" data-pref="luggage" onclick="togglePref(this)">🧳 Голям багаж ОК</div>
+        <div class="frow2">
+          <div class="flabel">Музика</div>
+          <div class="chips2">
+            <div class="pc" data-p="mus_pop" onclick="tPex(this,'mus')">🎵 Поп/Чалга</div>
+            <div class="pc" data-p="mus_radio" onclick="tPex(this,'mus')">📻 Радио</div>
+            <div class="pc" data-p="mus_client" onclick="tPex(this,'mus')">🎧 По желание</div>
+            <div class="pc" data-p="mus_quiet" onclick="tPex(this,'mus')">🔇 Тишина</div>
           </div>
         </div>
+        <div class="frow2">
+          <div class="flabel">Допълнително</div>
+          <div class="chips2">
+            <div class="pc" data-p="child" onclick="tP(this)">👶 Детско столче</div>
+            <div class="pc" data-p="card" onclick="tP(this)">💳 Плащане с карта</div>
+            <div class="pc" data-p="english" onclick="tP(this)">🇬🇧 English</div>
+            <div class="pc" data-p="drive_calm" onclick="tPex(this,'drv')">🐢 Спокоен стил</div>
+            <div class="pc" data-p="drive_fast" onclick="tPex(this,'drv')">⚡ Бърз стил</div>
+            <div class="pc" data-p="local" onclick="tP(this)">🗺 Познавам града</div>
+          </div>
+        </div>
+      </div>
 
-        <div class="form-row">
-          <div class="form-label">Стил на шофиране</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="drive_calm" onclick="togglePref(this)">🐢 Спокоен</div>
-            <div class="fchip" data-pref="drive_fast" onclick="togglePref(this)">⚡ Бърз</div>
-            <div class="fchip" data-pref="drive_gps" onclick="togglePref(this)">📍 Следвам GPS</div>
-            <div class="fchip" data-pref="drive_local" onclick="togglePref(this)">🗺 Познавам града</div>
+      <!-- Booking fees -->
+      <div class="fsec">
+        <div class="fsec-title">💶 Допълнителни такси</div>
+        <div class="vbox-sub" style="font-size:11px;color:var(--mu);text-align:left;line-height:1.5">Избери кои такси предлагаш. Пътникът ги вижда при поръчката. Комисионната (10%) се изчислява върху цената + добавките.</div>
+        <div class="frow2">
+          <div class="flabel">Такса „идване от далеч"</div>
+          <div class="chips2">
+            <div class="pc" data-p="tip2" onclick="tP(this)">+2€</div>
+            <div class="pc" data-p="tip5" onclick="tP(this)">+5€</div>
+            <div class="pc" data-p="tip10" onclick="tP(this)">+10€</div>
+          </div>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Букинг за определен час</div>
+          <div class="chips2">
+            <div class="pc" data-p="book2" onclick="tP(this)">Букинг +2€</div>
+            <div class="pc" data-p="book5" onclick="tP(this)">Букинг +5€</div>
+            <div class="pc" data-p="book10" onclick="tP(this)">Букинг +10€</div>
           </div>
         </div>
       </div>
 
       <!-- Hours -->
-      <div class="form-section">
-        <div class="form-title">Работни часове</div>
-        <div class="form-label" style="margin-bottom:4px">Предпочитано работно време (може повече от 1)</div>
-        <div class="hour-grid" id="hourGrid"></div>
+      <div class="fsec">
+        <div class="fsec-title">🕐 Работно време</div>
+        <div class="grid3" id="hourGrid"></div>
       </div>
 
       <!-- Districts -->
-      <div class="form-section">
-        <div class="form-title">Работни райони</div>
-        <div class="form-label" style="margin-bottom:4px">Районите, в които предпочиташ да работиш</div>
-        <div class="district-grid" id="districtGrid"></div>
+      <div class="fsec">
+        <div class="fsec-title">📍 Работни райони</div>
+        <div class="grid3" id="distGrid"></div>
       </div>
 
       <!-- Contact -->
-      <div class="form-section">
-        <div class="form-title">Контакт (незадължително)</div>
-        <div class="form-row">
-          <div class="form-label">Телефон (вижда се само при отворен профил)</div>
-          <input class="form-input" id="fPhone" placeholder="08X XXX XXXX" type="tel" maxlength="20"/>
+      <div class="fsec">
+        <div class="fsec-title">📞 Контакт</div>
+        <div class="frow2">
+          <div class="flabel">Телефон (публичен)</div>
+          <input class="finput" id="fPhone" placeholder="+359 8X XXX XXXX" type="tel"/>
         </div>
-        <div class="form-row">
-          <div class="form-label">Viber / WhatsApp</div>
-          <div class="chips-row">
-            <div class="fchip" data-pref="viber" onclick="togglePref(this)">💜 Viber</div>
-            <div class="fchip" data-pref="whatsapp" onclick="togglePref(this)">💚 WhatsApp</div>
+        <div class="chips2">
+          <div class="pc" data-p="viber" onclick="tP(this)">💜 Viber</div>
+          <div class="pc" data-p="whatsapp" onclick="tP(this)">💚 WhatsApp</div>
+          <div class="pc" data-p="call_only" onclick="tP(this)">📞 Само обаждане</div>
+        </div>
+      </div>
+
+      <!-- Revolut for receiving commissions -->
+      <div class="fsec">
+        <div class="fsec-title">💳 Моят Revolut (за получаване)</div>
+        <div class="frow2">
+          <div class="flabel">Revolut.me линк или телефон (за превод на приходи)</div>
+          <input class="finput" id="fRevolut" placeholder="revolut.me/username или +359…"/>
+        </div>
+        <div class="notice n-info" style="font-size:11px">Администраторът превежда твоя дял след потвърдени курсове.</div>
+      </div>
+
+      <button class="btn btn-y" id="saveBtn" onclick="saveProfile()">💾 Запази профила</button>
+      <div id="saveMsg" style="display:none" class="notice n-ok">✓ Профилът е обновен!</div>
+      <button class="btn btn-ghost" onclick="drvLogout()" style="margin-top:-4px">Изход от профила</button>
+      <div style="height:20px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN PAGE ══ -->
+<div class="page" id="pageAdm">
+  <div class="scroll" id="admScroll" style="padding-top:14px">
+
+    <div id="admLogin">
+      <div class="vbox">
+        <div class="vbox-ico">🔐</div>
+        <div class="vbox-title">Администраторски панел</div>
+        <input class="finput" id="admPass" type="password" placeholder="парола" style="max-width:200px;text-align:center"/>
+        <div id="admPassErr" class="notice n-err" style="display:none">Грешна парола.</div>
+        <button class="btn btn-y btn-sm" onclick="admLogin()">Вход →</button>
+      </div>
+    </div>
+
+    <div id="admPanel" style="display:none;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:15px;font-weight:900;color:var(--y)">⚙️ Администрация</div>
+        <button class="btn btn-ghost btn-sm" onclick="admLogout()">Изход</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid3" id="admStats"></div>
+
+      <!-- Settings -->
+      <div class="fsec">
+        <div class="fsec-title">Настройки</div>
+        <div class="frow2">
+          <div class="flabel">Твоят Revolut.me линк (за комисионни от шофьори)</div>
+          <input class="finput" id="admRevolut" placeholder="revolut.me/username"/>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Viber за документи (показва се на чакащите)</div>
+          <input class="finput" id="admViber" placeholder="+359 8X XXX XXXX"/>
+        </div>
+        <div class="frow2">
+          <div class="flabel">Комисионна % (по подразбиране 10)</div>
+          <input class="finput" id="admComm" placeholder="10" type="number" min="1" max="50" style="max-width:80px"/>
+        </div>
+        <button class="btn btn-y btn-sm" style="width:auto" onclick="saveAdmSettings()">Запази настройките</button>
+      </div>
+
+      <!-- Commission tracker -->
+      <div class="fsec">
+        <div class="fsec-title">💰 Комисионни</div>
+        <div id="admCommList"></div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <div style="flex:1;background:var(--s1);border-radius:var(--rads);padding:8px;text-align:center">
+            <div style="font-size:16px;font-weight:900;color:var(--gr)" id="admCommPaid">0€</div>
+            <div style="font-size:10px;color:var(--mu)">Получени</div>
+          </div>
+          <div style="flex:1;background:var(--s1);border-radius:var(--rads);padding:8px;text-align:center">
+            <div style="font-size:16px;font-weight:900;color:var(--y)" id="admCommPend">0€</div>
+            <div style="font-size:10px;color:var(--mu)">Чакащи</div>
           </div>
         </div>
       </div>
 
-      <!-- Actions -->
-      <button class="btn btn-primary" id="saveBtn" onclick="saveProfile()">💾 Запази профила</button>
-      <button class="btn btn-secondary" onclick="logoutDriver()" style="margin-top:-6px">Изход от профила</button>
-      <div id="saveMsg" style="text-align:center;font-size:13px;color:var(--green);display:none;font-weight:700">✓ Профилът е запазен!</div>
-      <div style="height:20px"></div>
+      <!-- Pending -->
+      <div>
+        <div style="font-size:11px;font-weight:900;color:var(--y);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">⏳ Чакат одобрение</div>
+        <div id="admPending"></div>
+      </div>
+      <!-- Approved -->
+      <div>
+        <div style="font-size:11px;font-weight:900;color:var(--gr);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">✅ Одобрени шофьори</div>
+        <div id="admApproved"></div>
+      </div>
+      <!-- Rejected -->
+      <div>
+        <div style="font-size:11px;font-weight:900;color:var(--rd);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">❌ Отхвърлени</div>
+        <div id="admRejected"></div>
+      </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════ MODAL (passenger view) ══════════════ -->
-<div class="overlay hidden" id="overlay" onclick="closeModal(event)">
+<!-- ══ MODAL: Driver profile + order ══ -->
+<div class="overlay hide" id="overlay" onclick="overlayClick(event)">
   <div class="modal" id="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="modal-title">Профил на шофьора</div>
-      <div id="modalOnline"></div>
+    <!-- Profile view -->
+    <div id="modalProfile">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="modal-title">Профил на шофьора</div>
+        <div id="mOnline"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:10px">
+        <div class="plate" id="mPlate">—</div>
+        <div style="font-size:11px;color:var(--mu);font-weight:600" id="mOp">—</div>
+        <div style="font-size:11px;color:var(--cy);font-weight:700" id="mCarInfo">—</div>
+      </div>
+      <div class="mrow" style="margin-bottom:8px">
+        <div class="mlbl">За шофьора</div>
+        <div class="mval" id="mBio">—</div>
+      </div>
+      <div class="mrow" style="margin-bottom:8px" id="mCarComfortRow">
+        <div class="mlbl">Комфорт в колата</div>
+        <div class="mval" style="color:var(--cy)" id="mCarComfort">—</div>
+      </div>
+      <div class="mrow" style="margin-bottom:8px">
+        <div class="mlbl">Предпочитания</div>
+        <div class="tags" id="mTags"></div>
+      </div>
+      <div class="mrow" style="margin-bottom:8px" id="mHoursRow">
+        <div class="mlbl">Работно време</div>
+        <div class="mval" id="mHours">—</div>
+      </div>
+      <div class="mrow" style="margin-bottom:10px" id="mDistRow">
+        <div class="mlbl">Работни райони</div>
+        <div class="mval" id="mDist">—</div>
+      </div>
+      <div class="mrow" id="mPhoneRow" style="display:none;margin-bottom:10px">
+        <div class="mlbl">Телефон</div>
+        <div class="mval" style="font-size:15px;font-weight:900" id="mPhone">—</div>
+      </div>
+      <button class="btn btn-y" onclick="startOrder()" id="orderStartBtn">🚕 Поръчай това такси</button>
+      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:6px">Затвори</button>
     </div>
-    <div style="display:flex;flex-direction:column;gap:4px">
-      <div class="modal-plate" id="modalPlate">—</div>
-      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:2px" id="modalOp">—</div>
-      <div style="font-size:12px;color:var(--muted)" id="modalModel">—</div>
+
+    <!-- Order flow -->
+    <div id="modalOrder" style="display:none">
+      <div class="modal-title" style="margin-bottom:10px">🚕 Поръчка</div>
+
+      <!-- Step A: details -->
+      <div id="orderStepA" class="order-step">
+        <div class="mrow">
+          <div class="mlbl">Откъде</div>
+          <input class="finput" id="oFrom" placeholder="Начална точка…"/>
+        </div>
+        <div class="mrow">
+          <div class="mlbl">Накъде</div>
+          <input class="finput" id="oTo" placeholder="Дестинация…"/>
+        </div>
+        <div class="mrow">
+          <div class="mlbl">Бележка (незадължително)</div>
+          <input class="finput" id="oNote" placeholder="Напр: терминал 2, 3 куфара…"/>
+        </div>
+
+        <!-- Booking fee selector -->
+        <div id="oBookingSection" style="display:none">
+          <div class="mlbl" style="margin-bottom:6px">Допълнителна такса</div>
+          <div class="booking-opts" id="oBookingOpts"></div>
+        </div>
+
+        <button class="btn btn-y" onclick="submitOrder()">Изпрати заявка →</button>
+        <button class="btn btn-ghost" onclick="backToProfile()" style="margin-top:4px">← Назад</button>
+      </div>
+
+      <!-- Step B: waiting for driver price -->
+      <div id="orderStepB" style="display:none" class="order-step">
+        <div class="notice n-warn" style="text-align:center">
+          <div style="font-size:24px;margin-bottom:6px">⏳</div>
+          <strong>Заявката е изпратена!</strong><br>
+          Чакаме шофьорът да потвърди и въведе цена…
+        </div>
+        <div id="oWaitInfo" class="notice n-info" style="font-size:12px"></div>
+        <button class="btn btn-ghost" onclick="checkOrderPrice()" id="checkPriceBtn">🔄 Провери цена</button>
+        <button class="btn btn-rd" onclick="cancelOrder()" style="margin-top:4px">Откажи поръчката</button>
+      </div>
+
+      <!-- Step C: payment -->
+      <div id="orderStepC" style="display:none" class="order-step">
+        <div class="notice n-ok" style="text-align:center;margin-bottom:4px">
+          ✅ Шофьорът потвърди и е на път!
+        </div>
+        <div class="price-calc" id="oPriceCalc"></div>
+        <div class="notice n-info" style="font-size:11px">
+          💡 Плащате директно на шофьора в колата (кеш или карта). Комисионната е за сметка на шофьора.
+        </div>
+        <div id="oDriverContact" class="notice n-pu" style="font-size:12px;display:none"></div>
+        <button class="btn btn-ghost" onclick="closeModal()">Затвори</button>
+      </div>
     </div>
-    <div class="modal-section">
-      <div class="modal-label">За шофьора</div>
-      <div class="modal-val" id="modalBio">—</div>
-    </div>
-    <div class="modal-section" id="modalTagsSection">
-      <div class="modal-label">Предпочитания</div>
-      <div class="modal-tags" id="modalTags"></div>
-    </div>
-    <div class="modal-section" id="modalHoursSection">
-      <div class="modal-label">Работни часове</div>
-      <div class="modal-val" id="modalHours">—</div>
-    </div>
-    <div class="modal-section" id="modalDistSection">
-      <div class="modal-label">Работни райони</div>
-      <div class="modal-val" id="modalDist">—</div>
-    </div>
-    <div class="modal-section" id="modalPhoneSection" style="display:none">
-      <div class="modal-label">Телефон</div>
-      <div class="modal-val" id="modalPhone">—</div>
-    </div>
-    <button class="modal-close" onclick="closeModal()">Затвори</button>
   </div>
 </div>
 
 <script>
-/* ─────────────────────────────────────────────
-   CONSTANTS
-───────────────────────────────────────────── */
-const SOFIA_JSON_URL='https://emillion-lab.github.io/TAXI/taxi_data_Sofia8.6.26.json';
+/* ══════════════════════════════════════════════
+   CONSTANTS & DATA
+══════════════════════════════════════════════ */
+const REGISTRY_URL='https://emillion-lab.github.io/TAXI/taxi_data_Sofia8.6.26.json';
+const ADMIN_PASS='taxi2026sofia'; // Change before deploy!
+const COMM_PCT=10;
 
-const HOURS=[
-  '00–04','04–08','08–12','12–16','16–20','20–24',
-  'Нощен','Сутрин','Обед','Следобед','Вечер','24/7'
-];
-const DISTRICTS=[
-  'Подуяне','Слатина','Красно село','Надежда','Люлин','Студентски',
-  'Триадица','Средец','Сердика','Искър','Младост','Витоша',
-  'Панчарево','Банкя','Лозенец','Изгрев','Оборище','Илинден',
-  'Овча купел','Красна поляна','Нови Искър','Кремиковци','Връбница','Летище'
-];
-const TAG_META={
-  smoke_ok:{label:'🚬 Пушач ОК',cls:'tag-smoke'},
-  smoke_outside:{label:'⏸ Пауза',cls:'tag-smoke'},
-  no_smoke:{label:'🚭 Непушач',cls:'tag-nosm'},
-  pet_ok:{label:'🐾 Животни ОК',cls:'tag-pet'},
-  no_pet:{label:'🚫 Без животни',cls:'tag-quiet'},
-  music_pop:{label:'🎵 Поп/Чалга',cls:'tag-music'},
-  music_radio:{label:'📻 Радио',cls:'tag-music'},
-  music_client:{label:'🎧 По желание',cls:'tag-music'},
-  quiet:{label:'🔇 Тихо',cls:'tag-quiet'},
-  child_seat:{label:'👶 Детско',cls:'tag-child'},
-  card_pay:{label:'💳 Карта',cls:'tag-card'},
-  minivan:{label:'🚐 Ван',cls:'tag-minivan'},
-  english:{label:'🇬🇧 English',cls:'tag-pet'},
-  luggage:{label:'🧳 Багаж',cls:'tag-quiet'},
-  drive_calm:{label:'🐢 Спокоен',cls:'tag-quiet'},
-  drive_fast:{label:'⚡ Бърз',cls:'tag-music'},
-  drive_gps:{label:'📍 GPS',cls:'tag-quiet'},
-  drive_local:{label:'🗺 Познава',cls:'tag-pet'},
-  viber:{label:'💜 Viber',cls:'tag-music'},
-  whatsapp:{label:'💚 WhatsApp',cls:'tag-card'},
+const CAR_BRANDS={
+  'BMW':['1','3','5','7','X3','X5','X7'],
+  'Mercedes':['C-Class','E-Class','S-Class','Vito','Sprinter','GLE'],
+  'Audi':['A4','A6','A8','Q5','Q7'],
+  'Volkswagen':['Passat','Tiguan','Touareg','Transporter','Caravelle'],
+  'Skoda':['Octavia','Superb','Kodiaq','Karoq'],
+  'Toyota':['Camry','Corolla','Land Cruiser','Alphard'],
+  'Lexus':['ES','RX','LX','LS'],
+  'Hyundai':['Sonata','Tucson','Santa Fe','H1'],
+  'Kia':['Stinger','Sorento','Carnival'],
+  'Ford':['Mondeo','Galaxy','S-Max','Transit'],
+  'Renault':['Talisman','Espace','Traffic'],
+  'Citroen':['C5','Berlingo','SpaceTourer'],
+  'Peugeot':['508','3008','Traveller'],
+  'Volvo':['S60','S90','XC60','XC90'],
+  'Opel':['Insignia','Zafira'],
+  'Dacia':['Logan','Duster'],
+  'Lada':['Vesta','Niva'],
+  'Друго':[]
 };
 
-/* ─────────────────────────────────────────────
-   STATE
-───────────────────────────────────────────── */
-let sofiaRegistry=new Map(); // reg -> {op, model}
-let profiles={};             // reg -> profile object (from Claude API)
-let conversationHistory=[];  // Claude API conversation state
-let currentDriverReg=null;
-let activeFilters=new Set();
-let currentProfile={prefs:new Set(),hours:new Set(),districts:new Set(),online:false,bio:'',phone:''};
+const HOURS=['00–04','04–08','08–12','12–16','16–20','20–24','Нощен','Сутрин','Обед','Следобед','Вечер','24/7'];
+const DISTRICTS=['Подуяне','Слатина','Красно село','Надежда','Люлин','Студентски','Триадица','Средец','Сердика','Искър','Младост','Витоша','Панчарево','Банкя','Лозенец','Изгрев','Оборище','Илинден','Овча купел','Красна поляна','Нови Искър','Кремиковци','Връбница','Летище'];
 
-/* ─────────────────────────────────────────────
+const PTAGS={
+  smoke_yes:{l:'🚬 Пушене OK',c:'to'},smoke_pause:{l:'⏸ Пауза за цигара',c:'to'},smoke_no:{l:'🚭 Непушач',c:'tg'},
+  alc_yes:{l:'🍺 Алкохол OK',c:'tp'},alc_no:{l:'🚫 Без алкохол',c:'tmu'},
+  pet_yes:{l:'🐾 Животни OK',c:'tb'},pet_no:{l:'🚫 Без животни',c:'tmu'},
+  mus_pop:{l:'🎵 Поп/Чалга',c:'tp'},mus_radio:{l:'📻 Радио',c:'tp'},mus_client:{l:'🎧 По желание',c:'tp'},mus_quiet:{l:'🔇 Тишина',c:'tmu'},
+  child:{l:'👶 Детско столче',c:'ty'},card:{l:'💳 Карта',c:'tg'},english:{l:'🇬🇧 English',c:'tb'},
+  drive_calm:{l:'🐢 Спокоен',c:'tmu'},drive_fast:{l:'⚡ Бърз',c:'to'},local:{l:'🗺 Познава',c:'tb'},
+  comfort:{l:'🛋 Бизнес/Лукс',c:'ty'},legroom:{l:'🦵 Много място',c:'tc'},
+  leather:{l:'💺 Кожен',c:'ty'},climate:{l:'❄️ Климатик зона',c:'tb'},usb:{l:'🔌 USB',c:'tmu'},wifi:{l:'📶 WiFi',c:'tb'},
+  size_s:{l:'🚗 Малка',c:'tmu'},size_m:{l:'🚙 Средна',c:'tb'},size_l:{l:'🚐 Ван',c:'tb'},
+  boot_s:{l:'📦 <300л',c:'tmu'},boot_m:{l:'🧳 300–500л',c:'ty'},boot_l:{l:'🧳🧳 500–700л',c:'ty'},boot_xl:{l:'🧳🧳🧳 700+л',c:'ty'},
+  tip2:{l:'💶 +2€ идване',c:'tg'},tip5:{l:'💶 +5€ идване',c:'tg'},tip10:{l:'💶 +10€ идване',c:'tg'},
+  book2:{l:'🕐 Букинг +2€',c:'ty'},book5:{l:'🕐 Букинг +5€',c:'ty'},book10:{l:'🕐 Букинг +10€',c:'ty'},
+  viber:{l:'💜 Viber',c:'tp'},whatsapp:{l:'💚 WhatsApp',c:'tg'},call_only:{l:'📞 Само тел.',c:'tmu'},
+};
+
+const MUTEX_GROUPS={smoke:['smoke_yes','smoke_pause','smoke_no'],alc:['alc_yes','alc_no'],pet:['pet_yes','pet_no'],mus:['mus_pop','mus_radio','mus_client','mus_quiet'],size:['size_s','size_m','size_l'],boot:['boot_s','boot_m','boot_l','boot_xl'],drv:['drive_calm','drive_fast']};
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let registry=new Map();
+let drvReg=null;
+let drvPr={prefs:new Set(),hours:new Set(),districts:new Set(),online:false,bio:'',phone:'',revolut:'',carBrand:'',carModel:'',carYear:'',carComfort:''};
+let activeF=new Set();
+let admLoggedIn=false;
+let admSettings={revolut:'',viber:'',commPct:COMM_PCT};
+let currentOrderReg=null;
+let selectedBooking=null;
+let currentOrderId=null;
+
+/* ══════════════════════════════════════════════
+   STORAGE
+══════════════════════════════════════════════ */
+async function stGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch{return null;}}
+async function stSet(k,v){try{await window.storage.set(k,JSON.stringify(v));return true;}catch(e){console.error(e);return false;}}
+async function stDel(k){try{await window.storage.delete(k);return true;}catch{return false;}}
+async function stList(pre){try{const r=await window.storage.list(pre);return r?.keys||[];}catch{return[];}}
+
+/* ══════════════════════════════════════════════
    INIT
-───────────────────────────────────────────── */
+══════════════════════════════════════════════ */
 async function init(){
-  buildHourGrid();
-  buildDistrictGrid();
-  await loadSofiaRegistry();
-  await loadProfilesFromAPI();
-  renderCards();
+  buildGrids();
+  buildBrandSelects();
+  buildDistrictFilter();
+  await loadRegistry();
+  const s=JSON.parse(localStorage.getItem('admSettings')||'{}');
+  admSettings={revolut:s.revolut||'',viber:s.viber||'',commPct:s.commPct||COMM_PCT};
+  await checkAdmDot();
+  document.getElementById('passLoad').style.display='none';
+  renderPass();
 }
 
-/* ─────────────────────────────────────────────
-   LOAD SOFIA REGISTRY (for verification)
-───────────────────────────────────────────── */
-async function loadSofiaRegistry(){
+function buildGrids(){
+  document.getElementById('hourGrid').innerHTML=HOURS.map(h=>`<div class="gc" data-h="${h}" onclick="tH(this)">${h}</div>`).join('');
+  document.getElementById('distGrid').innerHTML=DISTRICTS.map(d=>`<div class="gc" data-d="${d}" onclick="tD(this)">${d}</div>`).join('');
+}
+
+function buildBrandSelects(){
+  const sel=document.getElementById('fCarBrand');
+  Object.keys(CAR_BRANDS).forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o);});
+}
+
+function updateModelList(){
+  const brand=document.getElementById('fCarBrand').value;
+  const models=CAR_BRANDS[brand]||[];
+  const inp=document.getElementById('fCarModel');
+  if(models.length){
+    // suggest models as datalist
+    let dl=document.getElementById('modelDL');
+    if(!dl){dl=document.createElement('datalist');dl.id='modelDL';document.body.appendChild(dl);}
+    dl.innerHTML=models.map(m=>`<option value="${m}">`).join('');
+    inp.setAttribute('list','modelDL');
+  } else {
+    inp.removeAttribute('list');
+  }
+}
+
+function buildDistrictFilter(){
+  const sel=document.getElementById('distFlt');
+  DISTRICTS.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});
+}
+
+async function loadRegistry(){
   try{
-    const res=await fetch(SOFIA_JSON_URL);
-    if(!res.ok) return;
-    const data=await res.json();
+    const r=await fetch(REGISTRY_URL);
+    if(!r.ok)return;
+    const data=await r.json();
     const list=Array.isArray(data)?data:(data.data||data.items||[]);
     list.forEach(item=>{
       const op=(item.operatorName||'').trim();
-      const vList=item.taxiLicensesVehiclesDrivers||item.vehicles||[];
-      vList.forEach(vd=>{
+      const vl=item.taxiLicensesVehiclesDrivers||item.vehicles||[];
+      vl.forEach(vd=>{
         const v=vd.taxiLicenseVehicle||vd.vehicle||vd||{};
-        const reg=normReg(v.registerNumber||v.regNumber||'');
-        if(reg&&!sofiaRegistry.has(reg))
-          sofiaRegistry.set(reg,{op, model:(v.markAndModel||v.model||'—').trim()});
+        const reg=nReg(v.registerNumber||v.regNumber||'');
+        if(reg&&!registry.has(reg)) registry.set(reg,{op,model:(v.markAndModel||v.model||'—').trim()});
       });
     });
-    console.log('Registry loaded:',sofiaRegistry.size,'vehicles');
-  }catch(e){ console.warn('Registry fetch failed:',e.message); }
+    // Build brand filter from registry
+    buildBrandFilter();
+  }catch(e){console.warn('Registry:',e.message);}
 }
 
-function normReg(s){ return (s||'').toUpperCase().replace(/\s+/g,'').trim(); }
-
-/* ─────────────────────────────────────────────
-   CLAUDE API — Load profiles (init conversation)
-───────────────────────────────────────────── */
-async function loadProfilesFromAPI(){
-  document.getElementById('loadingMsg').style.display='flex';
-  try{
-    // First message: ask Claude to initialize or return existing state
-    const sys=`You are the backend of TaxiMatch Sofia — a taxi driver profile database.
-You ONLY respond with valid JSON. Never add any explanation or markdown.
-Your job: maintain a JSON object called "profiles" where keys are Bulgarian taxi plate numbers.
-Each profile has: { reg, op, model, online, bio, phone, prefs[], hours[], districts[], updatedAt }
-On first call, return: {"profiles":{}, "action":"init"}
-When asked to load, return the full current profiles object.`;
-
-    const resp=await callClaude(sys,[{role:'user',content:'LOAD_PROFILES'}]);
-    const parsed=safeParseJSON(resp);
-    if(parsed&&parsed.profiles) profiles=parsed.profiles;
-    // seed conversation with the state so future calls preserve it
-    conversationHistory=[
-      {role:'user',content:'LOAD_PROFILES'},
-      {role:'assistant',content:JSON.stringify({profiles})}
-    ];
-  }catch(e){ console.warn('API init failed, using empty profiles'); }
-  document.getElementById('loadingMsg').style.display='none';
+function buildBrandFilter(){
+  const sel=document.getElementById('brandFlt');
+  Object.keys(CAR_BRANDS).forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o);});
 }
 
-/* ─────────────────────────────────────────────
-   CLAUDE API — Save / verify
-───────────────────────────────────────────── */
-const SYS_PROMPT=`You are the backend database of TaxiMatch Sofia. You ONLY respond with valid JSON, no markdown, no explanation.
-Current state is provided in conversation history.
-Commands you handle:
-- SAVE_PROFILE {reg, profile} → merge profile into profiles, return {"ok":true,"profiles":{...full...}}
-- VERIFY_PLATE {reg} → check if reg exists in provided registry list, return {"found":bool,"op":"...","model":"..."}
-- GET_PROFILES → return {"profiles":{...}}
-Always return the full updated profiles object on any mutation.`;
+function nReg(s){return(s||'').toUpperCase().replace(/\s+/g,'').trim();}
 
-async function callClaude(systemOverride, messages){
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:4000,
-      system:systemOverride||SYS_PROMPT,
-      messages
-    })
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+function goPage(p){
+  ['Pass','Drv','Adm'].forEach(x=>{
+    document.getElementById('page'+x).classList.toggle('on',x.toLowerCase()===p);
+    document.getElementById('t'+x).classList.toggle('on',x.toLowerCase()===p);
   });
-  const data=await res.json();
-  return data.content?.find(b=>b.type==='text')?.text||'{}';
+  if(p==='pass')renderPass();
+  if(p==='adm'&&admLoggedIn)renderAdm();
+  if(p==='drv'&&drvReg)renderDrvRequests();
 }
 
-function safeParseJSON(s){
-  try{ return JSON.parse(s); }
-  catch{
-    const m=s.match(/\{[\s\S]*\}/);
-    if(m) try{ return JSON.parse(m[0]); }catch{}
-    return null;
-  }
+let _logoTaps=0,_logoTimer=null;
+function logoTap(){
+  _logoTaps++;clearTimeout(_logoTimer);
+  _logoTimer=setTimeout(()=>_logoTaps=0,700);
+  if(_logoTaps>=5){_logoTaps=0;goPage('adm');}
 }
 
-/* ─────────────────────────────────────────────
-   VERIFY PLATE
-───────────────────────────────────────────── */
-async function verifyPlate(){
-  const raw=document.getElementById('verifyPlate').value;
-  const reg=normReg(raw);
-  if(!reg){ alert('Въведи регистрационен номер'); return; }
+/* ══════════════════════════════════════════════
+   PASSENGER PAGE
+══════════════════════════════════════════════ */
+function tF(el){const f=el.dataset.f;activeF.has(f)?(activeF.delete(f),el.classList.remove('on')):(activeF.add(f),el.classList.add('on'));renderPass();}
 
-  const btn=document.getElementById('verifyBtn');
-  btn.textContent='…'; btn.disabled=true;
-  const resEl=document.getElementById('verifyResult');
-  resEl.style.display='block';
+async function renderPass(){
+  const scroll=document.getElementById('passScroll');
+  const keys=await stList('profile:');
+  const brand=document.getElementById('brandFlt').value;
+  const dist=document.getElementById('distFlt').value;
+  const profiles=[];
+  for(const k of keys){const p=await stGet(k);if(p&&p.status==='approved')profiles.push(p);}
 
-  // Check locally against registry (fast)
-  let info=sofiaRegistry.get(reg);
-  if(!info){
-    // Try slight variations (common formatting differences)
-    for(const [k,v] of sofiaRegistry){
-      if(k.replace(/\s/g,'')===reg.replace(/\s/g,'')){info=v;break;}
-    }
-  }
-
-  if(info){
-    resEl.className='verify-result';
-    resEl.innerHTML=`✅ Намерен в регистъра<br><strong>${reg}</strong> — ${info.op}<br><em style="font-size:11px;color:var(--muted)">${info.model}</em>`;
-    setTimeout(()=>activateDriverProfile(reg,info),1200);
-  } else {
-    resEl.className='verify-result err';
-    resEl.innerHTML=`❌ Не е намерен в официалния регистър на активни таксита в София.<br><span style="font-size:11px">Само регистрирани автомобили могат да създадат профил.</span>`;
-  }
-  btn.textContent='Провери →'; btn.disabled=false;
-}
-
-function activateDriverProfile(reg, info){
-  currentDriverReg=reg;
-  // Load existing profile if any
-  const existing=profiles[reg];
-  if(existing){
-    currentProfile={
-      prefs:new Set(existing.prefs||[]),
-      hours:new Set(existing.hours||[]),
-      districts:new Set(existing.districts||[]),
-      online:existing.online||false,
-      bio:existing.bio||'',
-      phone:existing.phone||''
-    };
-    applyProfileToForm();
-  } else {
-    currentProfile={prefs:new Set(),hours:new Set(),districts:new Set(),online:false,bio:'',phone:''};
-  }
-  document.getElementById('stepVerify').style.display='none';
-  document.getElementById('stepProfile').style.display='flex';
-  document.getElementById('verifiedTitle').textContent=`${reg}`;
-  document.getElementById('verifiedPlateDisplay').textContent=`${info.op} · ${info.model}`;
-  updateOnlineToggle();
-}
-
-function applyProfileToForm(){
-  document.getElementById('fBio').value=currentProfile.bio;
-  document.getElementById('fPhone').value=currentProfile.phone;
-  // prefs chips
-  document.querySelectorAll('[data-pref]').forEach(el=>{
-    el.classList.toggle('on',currentProfile.prefs.has(el.dataset.pref));
-  });
-  // hours
-  document.querySelectorAll('[data-hour]').forEach(el=>{
-    el.classList.toggle('on',currentProfile.hours.has(el.dataset.hour));
-  });
-  // districts
-  document.querySelectorAll('[data-dist]').forEach(el=>{
-    el.classList.toggle('on',currentProfile.districts.has(el.dataset.dist));
-  });
-}
-
-/* ─────────────────────────────────────────────
-   TOGGLE HELPERS
-───────────────────────────────────────────── */
-function togglePref(el){
-  const p=el.dataset.pref;
-  // mutual exclusions
-  const mutex={smoke_ok:['no_smoke'],no_smoke:['smoke_ok','smoke_outside'],pet_ok:['no_pet'],no_pet:['pet_ok']};
-  if(mutex[p]) mutex[p].forEach(x=>{ currentProfile.prefs.delete(x); document.querySelector(`[data-pref="${x}"]`)?.classList.remove('on'); });
-  if(currentProfile.prefs.has(p)){ currentProfile.prefs.delete(p); el.classList.remove('on'); }
-  else{ currentProfile.prefs.add(p); el.classList.add('on'); }
-}
-
-function toggleOnline(){
-  currentProfile.online=!currentProfile.online;
-  updateOnlineToggle();
-}
-
-function updateOnlineToggle(){
-  document.getElementById('toggleOnline').classList.toggle('on',currentProfile.online);
-}
-
-function toggleFilter(el){
-  const f=el.dataset.f;
-  if(activeFilters.has(f)){ activeFilters.delete(f); el.classList.remove('on'); }
-  else{ activeFilters.add(f); el.classList.add('on'); }
-  renderCards();
-}
-
-/* ─────────────────────────────────────────────
-   BUILD HOUR / DISTRICT GRIDS
-───────────────────────────────────────────── */
-function buildHourGrid(){
-  const g=document.getElementById('hourGrid');
-  g.innerHTML=HOURS.map(h=>`<div class="hchip" data-hour="${h}" onclick="toggleHour(this)">${h}</div>`).join('');
-}
-function buildDistrictGrid(){
-  const g=document.getElementById('districtGrid');
-  g.innerHTML=DISTRICTS.map(d=>`<div class="dchip" data-dist="${d}" onclick="toggleDist(this)">${d}</div>`).join('');
-}
-function toggleHour(el){
-  const h=el.dataset.hour;
-  if(currentProfile.hours.has(h)){ currentProfile.hours.delete(h); el.classList.remove('on'); }
-  else{ currentProfile.hours.add(h); el.classList.add('on'); }
-}
-function toggleDist(el){
-  const d=el.dataset.dist;
-  if(currentProfile.districts.has(d)){ currentProfile.districts.delete(d); el.classList.remove('on'); }
-  else{ currentProfile.districts.add(d); el.classList.add('on'); }
-}
-
-/* ─────────────────────────────────────────────
-   SAVE PROFILE
-───────────────────────────────────────────── */
-async function saveProfile(){
-  if(!currentDriverReg) return;
-  const btn=document.getElementById('saveBtn');
-  btn.textContent='💾 Запазване…'; btn.disabled=true;
-
-  const profile={
-    reg:currentDriverReg,
-    op: (sofiaRegistry.get(currentDriverReg)||{}).op||'',
-    model:(sofiaRegistry.get(currentDriverReg)||{}).model||'',
-    online:currentProfile.online,
-    bio:document.getElementById('fBio').value.trim(),
-    phone:document.getElementById('fPhone').value.trim(),
-    prefs:[...currentProfile.prefs],
-    hours:[...currentProfile.hours],
-    districts:[...currentProfile.districts],
-    updatedAt:new Date().toISOString()
-  };
-
-  try{
-    // Update via Claude API — it persists the state in conversation memory
-    conversationHistory.push({role:'user',content:`SAVE_PROFILE ${JSON.stringify({reg:currentDriverReg,profile})}`});
-    const resp=await callClaude(null,conversationHistory);
-    const parsed=safeParseJSON(resp);
-    if(parsed?.profiles){
-      profiles=parsed.profiles;
-      conversationHistory.push({role:'assistant',content:resp});
-    } else {
-      // fallback: save locally in profiles object
-      profiles[currentDriverReg]=profile;
-    }
-    renderCards();
-    const msg=document.getElementById('saveMsg');
-    msg.style.display='block';
-    setTimeout(()=>msg.style.display='none',2500);
-  }catch(e){
-    // If API fails, save locally and warn
-    profiles[currentDriverReg]=profile;
-    renderCards();
-    console.warn('API save failed, saved locally only');
-  }
-  btn.textContent='💾 Запази профила'; btn.disabled=false;
-}
-
-function logoutDriver(){
-  currentDriverReg=null;
-  document.getElementById('stepVerify').style.display='block';
-  document.getElementById('stepProfile').style.display='none';
-  document.getElementById('verifyPlate').value='';
-  document.getElementById('verifyResult').style.display='none';
-}
-
-/* ─────────────────────────────────────────────
-   RENDER CARDS (passenger)
-───────────────────────────────────────────── */
-function renderCards(){
-  const scroll=document.getElementById('cardsScroll');
-  const distFilter=document.getElementById('districtFilter').value;
-
-  const all=Object.values(profiles);
-  // Only show non-hidden profiles (show all if no filter, hide explicitly offline only when online_now filter active)
-  let visible=all.filter(p=>{
-    if(activeFilters.has('online_now')&&!p.online) return false;
-    if(distFilter&&!(p.districts||[]).includes(distFilter)) return false;
-    for(const f of activeFilters){
-      if(f==='online_now') continue;
-      if(!(p.prefs||[]).includes(f)) return false;
-    }
+  let vis=profiles.filter(p=>{
+    const pr=p.prefs||[];
+    if(activeF.has('online_now')&&!p.online)return false;
+    if(activeF.has('smoke')&&!pr.includes('smoke_yes')&&!pr.includes('smoke_pause'))return false;
+    if(activeF.has('alcohol')&&!pr.includes('alc_yes'))return false;
+    if(activeF.has('pet')&&!pr.includes('pet_yes'))return false;
+    if(activeF.has('child')&&!pr.includes('child'))return false;
+    if(activeF.has('card')&&!pr.includes('card'))return false;
+    if(activeF.has('english')&&!pr.includes('english'))return false;
+    if(activeF.has('comfort')&&!pr.includes('comfort'))return false;
+    if(activeF.has('legroom')&&!pr.includes('legroom'))return false;
+    if(activeF.has('boot_big')&&!pr.includes('boot_l')&&!pr.includes('boot_xl'))return false;
+    if(activeF.has('van')&&!pr.includes('size_l'))return false;
+    if(brand&&p.carBrand!==brand)return false;
+    if(dist&&!(p.districts||[]).includes(dist))return false;
     return true;
   });
 
-  // Sort: online first, then by updatedAt
-  visible.sort((a,b)=>{
-    if(a.online&&!b.online) return -1;
-    if(!a.online&&b.online) return 1;
-    return new Date(b.updatedAt||0)-new Date(a.updatedAt||0);
-  });
+  vis.sort((a,b)=>(b.online?1:0)-(a.online?1:0)||(new Date(b.updatedAt||0)-new Date(a.updatedAt||0)));
 
-  if(!visible.length){
-    scroll.innerHTML=`<div class="empty"><div class="empty-icon">🚕</div><div class="empty-msg">${all.length?'Няма шофьори с тези предпочитания.<br>Промени филтрите.':'Все още няма регистрирани шофьори.<br>Бъди първият!'}</div></div>`;
+  if(!vis.length){
+    scroll.innerHTML=`<div class="empty"><div class="empty-ico">🚕</div><div class="empty-msg">${profiles.length?'Няма шофьори с тези критерии.<br>Промени филтрите.':'Все още няма одобрени шофьори.'}</div></div>`;
     return;
   }
 
-  scroll.innerHTML=visible.map(p=>{
-    const tags=(p.prefs||[]).map(key=>TAG_META[key]?`<span class="tag ${TAG_META[key].cls}">${TAG_META[key].label}</span>`:'').filter(Boolean).join('');
-    const hoursStr=(p.hours||[]).join(' · ')||'';
-    const distStr=(p.districts||[]).slice(0,4).join(', ')+(p.districts?.length>4?'…':'');
-    const onlineCls=p.online?'online-yes':'online-no';
-    const onlineTxt=p.online?'<span class="dot dot-green"></span>В момента':'Офлайн';
-    return `<div class="driver-card" onclick="openModal('${p.reg}')">
+  scroll.innerHTML=vis.map(p=>{
+    const pr=p.prefs||[];
+    const showTags=pr.filter(k=>PTAGS[k]&&!['tip2','tip5','tip10','book2','book5','book10'].includes(k)).slice(0,5);
+    const tags=showTags.map(k=>`<span class="tag ${PTAGS[k].c}">${PTAGS[k].l}</span>`).join('');
+    const hrs=(p.hours||[]).join(' · ');
+    const dst=(p.districts||[]).slice(0,3).join(', ')+((p.districts||[]).length>3?'…':'');
+    const carInfo=[p.carBrand,p.carModel,p.carYear].filter(Boolean).join(' ');
+    return `<div class="dcard ${p.online?'is-online':''}" onclick="openModal('${p.reg}')">
       <div class="dc-top">
-        <div>
-          <div class="dc-plate">${p.reg}</div>
-          <div class="dc-op">${p.op||''}</div>
-          <div class="dc-model">${p.model||''}</div>
+        <div class="dc-meta">
+          <div class="plate sm">${esc(p.reg)}</div>
+          <div class="dc-op">${esc(p.op||'')}</div>
+          ${carInfo?`<div class="dc-car">🚗 ${esc(carInfo)}</div>`:''}
         </div>
-        <div class="dc-status">
-          <span class="dc-online ${onlineCls}">${onlineTxt}</span>
-        </div>
+        <span class="spill ${p.online?'sp-on':'sp-off'}">${p.online?'🟢 Онлайн':'Офлайн'}</span>
       </div>
-      ${tags?`<div class="dc-tags">${tags}</div>`:''}
-      ${p.bio?`<div class="dc-bio">${escHtml(p.bio)}</div>`:''}
-      ${hoursStr?`<div class="dc-hours">🕐 ${hoursStr}</div>`:''}
-      ${distStr?`<div class="dc-districts">📍 ${distStr}</div>`:''}
+      ${p.carComfort?`<div class="dc-carinfo">💺 ${esc(p.carComfort)}</div>`:''}
+      ${tags?`<div class="tags">${tags}</div>`:''}
+      ${p.bio?`<div class="bio">${esc(p.bio)}</div>`:''}
+      <div class="dc-ft">
+        <span class="dc-hrs">${hrs?'🕐 '+hrs:''}</span>
+        <span class="dc-dst">${dst?'📍 '+dst:''}</span>
+      </div>
+      <button class="order-btn-card" onclick="event.stopPropagation();openModal('${p.reg}',true)">🚕 Поръчай</button>
     </div>`;
   }).join('');
 }
 
-function escHtml(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+/* ══════════════════════════════════════════════
+   MODAL — Profile + Order
+══════════════════════════════════════════════ */
+async function openModal(reg,directOrder=false){
+  currentOrderReg=reg;
+  selectedBooking=null;
+  const p=await stGet('profile:'+reg);
+  if(!p)return;
 
-/* ─────────────────────────────────────────────
-   MODAL
-───────────────────────────────────────────── */
-function openModal(reg){
-  const p=profiles[reg]; if(!p) return;
-  document.getElementById('modalPlate').textContent=p.reg;
-  document.getElementById('modalOp').textContent=p.op||'';
-  document.getElementById('modalModel').textContent=p.model||'';
-  document.getElementById('modalBio').textContent=p.bio||'Няма добавено описание.';
-  const onlineEl=document.getElementById('modalOnline');
-  onlineEl.innerHTML=p.online?'<span class="dc-online online-yes"><span class="dot dot-green"></span>В момента</span>':'<span class="dc-online online-no">Офлайн</span>';
-  // Tags
-  const tags=(p.prefs||[]).map(key=>TAG_META[key]?`<span class="tag ${TAG_META[key].cls}">${TAG_META[key].label}</span>`:'').filter(Boolean).join('');
-  document.getElementById('modalTags').innerHTML=tags||'<span style="font-size:12px;color:var(--muted)">Не са посочени</span>';
-  // Hours
-  const hrs=(p.hours||[]).join(' · ');
-  document.getElementById('modalHours').textContent=hrs||'Не е посочено';
-  // Districts
-  const dsts=(p.districts||[]).join(', ');
-  document.getElementById('modalDist').textContent=dsts||'Не е посочено';
-  // Phone
-  if(p.phone){
-    document.getElementById('modalPhone').textContent=p.phone;
-    document.getElementById('modalPhoneSection').style.display='flex';
+  // Fill profile
+  document.getElementById('mPlate').textContent=p.reg;
+  document.getElementById('mOp').textContent=p.op||'';
+  const carInfo=[p.carBrand,p.carModel,p.carYear].filter(Boolean).join(' ');
+  document.getElementById('mCarInfo').textContent=carInfo||'';
+  document.getElementById('mBio').textContent=p.bio||'Няма описание.';
+  document.getElementById('mOnline').innerHTML=p.online?'<span class="spill sp-on">🟢 Онлайн</span>':'<span class="spill sp-off">Офлайн</span>';
+
+  const carCom=document.getElementById('mCarComfortRow');
+  if(p.carComfort){document.getElementById('mCarComfort').textContent=p.carComfort;carCom.style.display='flex';}
+  else carCom.style.display='none';
+
+  const pr=p.prefs||[];
+  const tags=pr.filter(k=>PTAGS[k]&&!['tip2','tip5','tip10','book2','book5','book10'].includes(k))
+    .map(k=>`<span class="tag ${PTAGS[k].c}">${PTAGS[k].l}</span>`).join('');
+  document.getElementById('mTags').innerHTML=tags||'<span style="color:var(--mu);font-size:12px">Не са посочени</span>';
+  document.getElementById('mHours').textContent=(p.hours||[]).join(' · ')||'—';
+  document.getElementById('mDist').textContent=(p.districts||[]).join(', ')||'—';
+  const phRow=document.getElementById('mPhoneRow');
+  if(p.phone){document.getElementById('mPhone').textContent=p.phone;phRow.style.display='flex';}else phRow.style.display='none';
+
+  showModalProfile();
+  document.getElementById('overlay').classList.remove('hide');
+  if(directOrder)startOrder();
+}
+
+function showModalProfile(){
+  document.getElementById('modalProfile').style.display='block';
+  document.getElementById('modalOrder').style.display='none';
+}
+
+function startOrder(){
+  document.getElementById('modalProfile').style.display='none';
+  document.getElementById('modalOrder').style.display='block';
+  document.getElementById('orderStepA').style.display='flex';
+  document.getElementById('orderStepB').style.display='none';
+  document.getElementById('orderStepC').style.display='none';
+  document.getElementById('oFrom').value='';
+  document.getElementById('oTo').value='';
+  document.getElementById('oNote').value='';
+  // Build booking options
+  buildBookingOpts();
+}
+
+async function buildBookingOpts(){
+  const p=await stGet('profile:'+currentOrderReg);
+  if(!p)return;
+  const pr=p.prefs||[];
+  const tipOpts=pr.filter(k=>['tip2','tip5','tip10','book2','book5','book10'].includes(k));
+  const sec=document.getElementById('oBookingSection');
+  if(!tipOpts.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('oBookingOpts').innerHTML=tipOpts.map(k=>{
+    const labels={tip2:'+2€ идване',tip5:'+5€ идване',tip10:'+10€ идване',book2:'Букинг +2€',book5:'Букинг +5€',book10:'Букинг +10€'};
+    const prices={tip2:2,tip5:5,tip10:10,book2:2,book5:5,book10:10};
+    return `<div class="book-opt" data-k="${k}" data-price="${prices[k]}" onclick="selectBooking(this)">
+      <div class="bo-price">+${prices[k]}€</div>
+      <div class="bo-label">${labels[k]}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectBooking(el){
+  document.querySelectorAll('.book-opt').forEach(x=>x.classList.remove('on'));
+  if(selectedBooking===el.dataset.k){selectedBooking=null;}
+  else{el.classList.add('on');selectedBooking=el.dataset.k;}
+}
+
+async function submitOrder(){
+  const from=document.getElementById('oFrom').value.trim();
+  const to=document.getElementById('oTo').value.trim();
+  const note=document.getElementById('oNote').value.trim();
+  if(!from||!to){alert('Въведи откъде и накъде.');return;}
+
+  const bookingPrices={tip2:2,tip5:5,tip10:10,book2:2,book5:5,book10:10};
+  const bookingFee=selectedBooking?bookingPrices[selectedBooking]||0:0;
+
+  const orderId='ord_'+Date.now();
+  currentOrderId=orderId;
+  const order={
+    id:orderId,reg:currentOrderReg,
+    from,to,note,bookingFee,selectedBooking,
+    status:'pending',// pending → confirmed → completed → cancelled
+    price:null,
+    createdAt:new Date().toISOString()
+  };
+  await stSet('order:'+orderId,order);
+  // Add to driver's request queue
+  const drvOrders=await stGet('drvOrders:'+currentOrderReg)||[];
+  drvOrders.unshift(orderId);
+  await stSet('drvOrders:'+currentOrderReg,drvOrders);
+
+  document.getElementById('orderStepA').style.display='none';
+  document.getElementById('orderStepB').style.display='flex';
+  document.getElementById('oWaitInfo').innerHTML=`🚕 <strong>${currentOrderReg}</strong><br>📍 ${esc(from)} → ${esc(to)}${note?'<br>📝 '+esc(note):''}${bookingFee?'<br>💶 Добавка: +'+bookingFee+'€':''}`;
+}
+
+async function checkOrderPrice(){
+  if(!currentOrderId)return;
+  const btn=document.getElementById('checkPriceBtn');
+  btn.textContent='⏳ Проверяване…';btn.disabled=true;
+  const order=await stGet('order:'+currentOrderId);
+  if(order&&order.status==='confirmed'&&order.price){
+    showPaymentStep(order);
   } else {
-    document.getElementById('modalPhoneSection').style.display='none';
+    alert('Шофьорът все още не е потвърдил. Опитай след малко.');
   }
-  document.getElementById('overlay').classList.remove('hidden');
+  btn.textContent='🔄 Провери цена';btn.disabled=false;
 }
 
-function closeModal(e){
-  if(!e||e.target===document.getElementById('overlay')||e.target.classList.contains('modal-close'))
-    document.getElementById('overlay').classList.add('hidden');
+function showPaymentStep(order){
+  document.getElementById('orderStepB').style.display='none';
+  document.getElementById('orderStepC').style.display='flex';
+  const pct=admSettings.commPct||COMM_PCT;
+  const total=parseFloat(order.price)+(order.bookingFee||0);
+  const comm=(total*pct/100).toFixed(2);
+  document.getElementById('oPriceCalc').innerHTML=`
+    <div class="price-row"><span class="lbl">Цена на курса</span><span class="val">${order.price}€</span></div>
+    ${order.bookingFee?`<div class="price-row"><span class="lbl">${order.selectedBooking?.startsWith('book')?'Букинг':'Идване от далеч'}</span><span class="val">+${order.bookingFee}€</span></div>`:''}
+    <hr class="divider"/>
+    <div class="price-row total"><span class="lbl" style="font-weight:900">Общо за плащане</span><span class="val">${total.toFixed(2)}€</span></div>
+    <div class="price-row commission"><span class="lbl">Платете директно на шофьора в колата</span></div>`;
+  // Driver contact
+  const drvContact=document.getElementById('oDriverContact');
+  if(order.driverPhone){
+    drvContact.style.display='block';
+    drvContact.innerHTML=`📱 Шофьорът е на линия: <strong>${esc(order.driverPhone)}</strong>`;
+  }
 }
 
-/* ─────────────────────────────────────────────
-   MODE SWITCH
-───────────────────────────────────────────── */
-function switchMode(m){
-  document.getElementById('pagePassenger').classList.toggle('active',m==='passenger');
-  document.getElementById('pageDriver').classList.toggle('active',m==='driver');
-  document.getElementById('btnPassenger').classList.toggle('active',m==='passenger');
-  document.getElementById('btnDriver').classList.toggle('active',m==='driver');
+async function cancelOrder(){
+  if(!currentOrderId)return;
+  const order=await stGet('order:'+currentOrderId);
+  if(order){order.status='cancelled';await stSet('order:'+currentOrderId,order);}
+  closeModal();
 }
 
-/* ─────────────────────────────────────────────
-   START
-───────────────────────────────────────────── */
+function backToProfile(){
+  document.getElementById('modalOrder').style.display='none';
+  document.getElementById('modalProfile').style.display='block';
+}
+
+function closeModal(){document.getElementById('overlay').classList.add('hide');}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+
+/* ══════════════════════════════════════════════
+   DRIVER — VERIFY
+══════════════════════════════════════════════ */
+async function doVerify(){
+  const reg=nReg(document.getElementById('vPlate').value);
+  const phone=document.getElementById('vPhone').value.trim();
+  if(!reg){alert('Въведи рег. номер.');return;}
+  if(!phone){alert('Въведи телефон.');return;}
+  const btn=document.getElementById('vBtn');
+  btn.textContent='…';btn.disabled=true;
+  const rEl=document.getElementById('vResult');
+  rEl.style.display='block';
+
+  const existing=await stGet('profile:'+reg);
+  if(existing){
+    if(existing.status==='approved'){rEl.innerHTML=`<div class="vr vr-ok">✅ Одобрен — отваряме профила.</div>`;setTimeout(()=>activateDrv(reg,existing),1000);}
+    else if(existing.status==='pending'){rEl.innerHTML=`<div class="vr vr-pend">⏳ Молбата е изпратена — чака одобрение.</div>`;setTimeout(()=>showPending(reg,existing),1000);}
+    else{rEl.innerHTML=`<div class="vr vr-err">❌ Молбата е отхвърлена. Свържи се с администратора.</div>`;}
+    btn.textContent='Провери и изпрати молба →';btn.disabled=false;return;
+  }
+
+  const info=registry.get(reg);
+  if(!info){
+    rEl.innerHTML=`<div class="vr vr-err">❌ ${reg} не е намерен в официалния регистър. Само активни таксита могат да се регистрират.</div>`;
+    btn.textContent='Провери и изпрати молба →';btn.disabled=false;return;
+  }
+
+  const profile={reg,op:info.op,model:info.model,phone,status:'pending',prefs:[],hours:[],districts:[],online:false,bio:'',phone,revolut:'',carBrand:'',carModel:'',carYear:'',carComfort:'',submittedAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  await stSet('profile:'+reg,profile);
+  await checkAdmDot();
+  rEl.innerHTML=`<div class="vr vr-ok">✅ ${reg} намерен — ${info.op}. Молбата е изпратена!</div>`;
+  setTimeout(()=>showPending(reg,profile),1200);
+  btn.textContent='Провери и изпрати молба →';btn.disabled=false;
+}
+
+function showPending(reg,profile){
+  drvReg=reg;
+  const viber=admSettings.viber;
+  document.getElementById('pendingMsg').innerHTML=`Администраторът ще провери молбата и ще те потвърди по Viber.${viber?`<br><br><strong>📱 Изпрати документи на: <span style="color:var(--pu)">${viber}</span></strong>`:''}`;
+  document.getElementById('drvS1').style.display='none';
+  document.getElementById('drvS2').style.display='block';
+  document.getElementById('drvS3').style.display='none';
+}
+
+function activateDrv(reg,profile){
+  drvReg=reg;
+  drvPr={
+    prefs:new Set(profile.prefs||[]),hours:new Set(profile.hours||[]),districts:new Set(profile.districts||[]),
+    online:profile.online||false,bio:profile.bio||'',phone:profile.phone||'',revolut:profile.revolut||'',
+    carBrand:profile.carBrand||'',carModel:profile.carModel||'',carYear:profile.carYear||'',carComfort:profile.carComfort||''
+  };
+  document.getElementById('drvBadgeTitle').textContent=reg;
+  document.getElementById('drvBadgeSub').textContent=`${profile.op||''} · ${profile.model||''}`;
+  document.getElementById('drvS1').style.display='none';
+  document.getElementById('drvS2').style.display='none';
+  document.getElementById('drvS3').style.display='flex';
+  applyPrToForm();
+  updateToggle();
+  renderDrvRequests();
+  renderDrvComm();
+}
+
+function applyPrToForm(){
+  document.getElementById('fBio').value=drvPr.bio;
+  document.getElementById('fPhone').value=drvPr.phone;
+  document.getElementById('fRevolut').value=drvPr.revolut;
+  document.getElementById('fCarBrand').value=drvPr.carBrand;
+  document.getElementById('fCarModel').value=drvPr.carModel;
+  document.getElementById('fCarYear').value=drvPr.carYear;
+  document.getElementById('fCarComfort').value=drvPr.carComfort;
+  document.querySelectorAll('[data-p]').forEach(el=>el.classList.toggle('on',drvPr.prefs.has(el.dataset.p)));
+  document.querySelectorAll('[data-h]').forEach(el=>el.classList.toggle('on',drvPr.hours.has(el.dataset.h)));
+  document.querySelectorAll('[data-d]').forEach(el=>el.classList.toggle('on',drvPr.districts.has(el.dataset.d)));
+}
+
+function drvLogout(){
+  drvReg=null;
+  document.getElementById('vPlate').value='';document.getElementById('vPhone').value='';
+  document.getElementById('vResult').style.display='none';
+  document.getElementById('drvS1').style.display='block';
+  document.getElementById('drvS2').style.display='none';
+  document.getElementById('drvS3').style.display='none';
+}
+
+/* ── Driver requests ── */
+async function renderDrvRequests(){
+  if(!drvReg)return;
+  const orderIds=await stGet('drvOrders:'+drvReg)||[];
+  const sect=document.getElementById('drvRequestsSection');
+  const cont=document.getElementById('drvRequests');
+  if(!orderIds.length){sect.style.display='none';return;}
+  const orders=[];
+  for(const id of orderIds.slice(0,10)){const o=await stGet('order:'+id);if(o&&o.status!=='cancelled')orders.push(o);}
+  const pending=orders.filter(o=>o.status==='pending');
+  if(!pending.length&&!orders.filter(o=>o.status==='confirmed').length){sect.style.display='none';return;}
+  sect.style.display='block';
+  cont.innerHTML=orders.slice(0,5).map(o=>{
+    const isPend=o.status==='pending';
+    return `<div class="req-card ${isPend?'new-req':''}">
+      <div class="req-top">
+        <div>
+          <div class="req-from">📍 ${esc(o.from)} → ${esc(o.to)}</div>
+          ${o.note?`<div class="req-detail">📝 ${esc(o.note)}</div>`:''}
+          ${o.bookingFee?`<div class="req-detail">💶 +${o.bookingFee}€ добавка</div>`:''}
+          <div class="req-detail">${new Date(o.createdAt).toLocaleTimeString('bg-BG')}</div>
+        </div>
+        <span class="spill ${isPend?'sp-pend':o.status==='confirmed'?'sp-on':'sp-off'}">${isPend?'⏳ Нова':o.status==='confirmed'?'✅ Потвърдена':'Приключена'}</span>
+      </div>
+      ${isPend?`
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div class="flabel">Въведи цена на курса (€)</div>
+        <div style="display:flex;gap:6px">
+          <input class="finput" id="price_${o.id}" placeholder="напр. 15" type="number" min="1" style="flex:1"/>
+          <button class="btn btn-gr btn-sm" onclick="confirmOrder('${o.id}')">✅ Потвърди</button>
+        </div>
+        <button class="btn btn-rd btn-xs" onclick="rejectOrder('${o.id}')">Откажи</button>
+      </div>`:`<div class="req-detail">💰 Цена: <strong>${o.price||'—'}€</strong>${o.bookingFee?' + '+o.bookingFee+'€ добавка':''}</div>`}
+    </div>`;
+  }).join('');
+}
+
+async function confirmOrder(orderId){
+  const price=document.getElementById('price_'+orderId)?.value;
+  if(!price||parseFloat(price)<=0){alert('Въведи валидна цена.');return;}
+  const order=await stGet('order:'+orderId);
+  if(!order)return;
+  order.status='confirmed';
+  order.price=parseFloat(price).toFixed(2);
+  order.driverPhone=drvPr.phone;
+  order.confirmedAt=new Date().toISOString();
+  await stSet('order:'+orderId,order);
+  // Track commission
+  const pct=admSettings.commPct||COMM_PCT;
+  const total=parseFloat(order.price)+(order.bookingFee||0);
+  const comm=(total*pct/100).toFixed(2);
+  const commRecord={orderId,reg:drvReg,price:order.price,bookingFee:order.bookingFee||0,total,comm,status:'pending',from:order.from,to:order.to,createdAt:new Date().toISOString()};
+  await stSet('comm:'+orderId,commRecord);
+  renderDrvRequests();
+  renderDrvComm();
+}
+
+async function rejectOrder(orderId){
+  const order=await stGet('order:'+orderId);
+  if(!order)return;
+  order.status='cancelled';order.rejectedAt=new Date().toISOString();
+  await stSet('order:'+orderId,order);
+  renderDrvRequests();
+}
+
+async function renderDrvComm(){
+  if(!drvReg)return;
+  const keys=await stList('comm:');
+  const all=[];
+  for(const k of keys){const c=await stGet(k);if(c&&c.reg===drvReg)all.push(c);}
+  if(!all.length){document.getElementById('drvCommSection').style.display='none';return;}
+  document.getElementById('drvCommSection').style.display='block';
+  const total=all.reduce((s,c)=>s+parseFloat(c.comm),0);
+  const paid=all.filter(c=>c.status==='paid').reduce((s,c)=>s+parseFloat(c.comm),0);
+  const pend=total-paid;
+  const revLink=admSettings.revolut?`https://revolut.me/${admSettings.revolut.replace('revolut.me/','').replace('https://','')}`:'';
+  document.getElementById('drvCommList').innerHTML=all.slice(0,5).map(c=>`
+    <div class="comm-item">
+      <span>${esc(c.from.split(' ')[0])}→${esc(c.to.split(' ')[0])}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="comm-amount">${c.comm}€</span>
+        <span class="comm-status ${c.status==='paid'?'cs-paid':'cs-pend'}">${c.status==='paid'?'Платено':'Дължимо'}</span>
+      </div>
+    </div>`).join('');
+  const commTot=document.getElementById('drvCommTotal');
+  commTot.innerHTML=`Дължимо: <strong style="color:var(--y)">${pend.toFixed(2)}€</strong>`;
+  if(pend>0&&revLink){
+    const amt=pend.toFixed(2);
+    commTot.innerHTML+=` &nbsp; <a href="${revLink}?amount=${amt}&currency=EUR&description=TaxiMatch+commission" target="_blank" class="btn btn-sm btn-y" style="display:inline-block;text-decoration:none;margin-top:6px">💳 Плати ${amt}€ комисионна</a>`;
+  }
+}
+
+async function saveProfile(){
+  if(!drvReg)return;
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='💾 Запазване…';btn.disabled=true;
+  const existing=await stGet('profile:'+drvReg)||{};
+  const profile={...existing,
+    online:drvPr.online,bio:document.getElementById('fBio').value.trim(),
+    phone:document.getElementById('fPhone').value.trim(),
+    revolut:document.getElementById('fRevolut').value.trim(),
+    carBrand:document.getElementById('fCarBrand').value,
+    carModel:document.getElementById('fCarModel').value.trim(),
+    carYear:document.getElementById('fCarYear').value.trim(),
+    carComfort:document.getElementById('fCarComfort').value.trim(),
+    prefs:[...drvPr.prefs],hours:[...drvPr.hours],districts:[...drvPr.districts],
+    updatedAt:new Date().toISOString()
+  };
+  await stSet('profile:'+drvReg,profile);
+  btn.textContent='💾 Запази профила';btn.disabled=false;
+  const msg=document.getElementById('saveMsg');msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2500);
+  renderPass();
+}
+
+/* ── Toggles ── */
+function tP(el){const p=el.dataset.p;drvPr.prefs.has(p)?(drvPr.prefs.delete(p),el.classList.remove('on')):(drvPr.prefs.add(p),el.classList.add('on'));}
+function tPex(el,g){(MUTEX_GROUPS[g]||[]).forEach(x=>{drvPr.prefs.delete(x);document.querySelector(`[data-p="${x}"]`)?.classList.remove('on');});drvPr.prefs.add(el.dataset.p);el.classList.add('on');}
+function tH(el){const h=el.dataset.h;drvPr.hours.has(h)?(drvPr.hours.delete(h),el.classList.remove('on')):(drvPr.hours.add(h),el.classList.add('on'));}
+function tD(el){const d=el.dataset.d;drvPr.districts.has(d)?(drvPr.districts.delete(d),el.classList.remove('on')):(drvPr.districts.add(d),el.classList.add('on'));}
+function toggleOnline(){drvPr.online=!drvPr.online;updateToggle();}
+function updateToggle(){document.getElementById('togOnline').classList.toggle('on',drvPr.online);}
+
+/* ══════════════════════════════════════════════
+   ADMIN
+══════════════════════════════════════════════ */
+async function checkAdmDot(){
+  const keys=await stList('profile:');
+  for(const k of keys){const p=await stGet(k);if(p?.status==='pending'){document.getElementById('admDot').style.display='block';return;}}
+  document.getElementById('admDot').style.display='none';
+}
+
+function admLogin(){
+  if(document.getElementById('admPass').value!==ADMIN_PASS){document.getElementById('admPassErr').style.display='block';return;}
+  admLoggedIn=true;
+  document.getElementById('admLogin').style.display='none';
+  document.getElementById('admPanel').style.display='flex';
+  document.getElementById('admRevolut').value=admSettings.revolut;
+  document.getElementById('admViber').value=admSettings.viber;
+  document.getElementById('admComm').value=admSettings.commPct;
+  renderAdm();
+}
+
+function admLogout(){
+  admLoggedIn=false;
+  document.getElementById('admPass').value='';
+  document.getElementById('admPassErr').style.display='none';
+  document.getElementById('admLogin').style.display='block';
+  document.getElementById('admPanel').style.display='none';
+}
+
+function saveAdmSettings(){
+  admSettings={revolut:document.getElementById('admRevolut').value.trim(),viber:document.getElementById('admViber').value.trim(),commPct:parseFloat(document.getElementById('admComm').value)||COMM_PCT};
+  localStorage.setItem('admSettings',JSON.stringify(admSettings));
+  alert('✓ Запазено.');
+}
+
+async function renderAdm(){
+  const keys=await stList('profile:');
+  const all=[];for(const k of keys){const p=await stGet(k);if(p)all.push(p);}
+  const pend=all.filter(p=>p.status==='pending');
+  const appr=all.filter(p=>p.status==='approved');
+  const rej=all.filter(p=>p.status==='rejected');
+
+  document.getElementById('admStats').innerHTML=[
+    {l:'⏳ Чакащи',v:pend.length,c:'var(--y)'},{l:'✅ Одобрени',v:appr.length,c:'var(--gr)'},{l:'❌ Отхвърлени',v:rej.length,c:'var(--rd)'}
+  ].map(s=>`<div class="stat-box"><div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+
+  const mk=(p,acts)=>`<div class="adm-card ${p.status}">
+    <div class="adm-top">
+      <div class="adm-info">
+        <div class="adm-name"><span class="plate sm">${esc(p.reg)}</span></div>
+        <div class="adm-det">${esc(p.op||'')} · ${esc(p.model||'')}</div>
+        <div class="adm-det">📱 ${esc(p.phone||'—')}</div>
+        ${p.revolut?`<div class="adm-det">💳 ${esc(p.revolut)}</div>`:''}
+        <div class="adm-det" style="color:var(--mu2);font-size:10px">${p.submittedAt?new Date(p.submittedAt).toLocaleString('bg-BG'):''}</div>
+      </div>
+      <span class="spill ${p.status==='pending'?'sp-pend':p.status==='approved'?'sp-on':'sp-rej'}">${p.status==='pending'?'⏳':p.status==='approved'?'✅':'❌'}</span>
+    </div>
+    ${admSettings.viber&&p.status==='pending'?`<div style="font-size:11px;color:var(--pu);font-weight:700">💜 Поискай документи: ${admSettings.viber}</div>`:''}
+    <div class="adm-actions">${acts}</div>
+  </div>`;
+
+  document.getElementById('admPending').innerHTML=pend.length?pend.map(p=>mk(p,`<button class="btn btn-gr btn-xs" onclick="admAction('${p.reg}','approved')">✅ Одобри</button><button class="btn btn-rd btn-xs" onclick="admAction('${p.reg}','rejected')">❌ Отхвърли</button>`)).join(''):`<div style="font-size:12px;color:var(--mu);padding:6px">Няма.</div>`;
+  document.getElementById('admApproved').innerHTML=appr.length?appr.map(p=>mk(p,`<button class="btn btn-ghost btn-xs" onclick="admAction('${p.reg}','rejected')">Отхвърли</button><button class="btn btn-rd btn-xs" onclick="admDel('${p.reg}')">🗑</button>`)).join(''):`<div style="font-size:12px;color:var(--mu);padding:6px">Няма.</div>`;
+  document.getElementById('admRejected').innerHTML=rej.length?rej.map(p=>mk(p,`<button class="btn btn-gr btn-xs" onclick="admAction('${p.reg}','approved')">↩ Одобри</button><button class="btn btn-rd btn-xs" onclick="admDel('${p.reg}')">🗑</button>`)).join(''):`<div style="font-size:12px;color:var(--mu);padding:6px">Няма.</div>`;
+
+  // Commission list
+  await renderAdmComm();
+  await checkAdmDot();
+}
+
+async function renderAdmComm(){
+  const keys=await stList('comm:');
+  const all=[];for(const k of keys){const c=await stGet(k);if(c)all.push(c);}
+  all.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  const totalPaid=all.filter(c=>c.status==='paid').reduce((s,c)=>s+parseFloat(c.comm),0);
+  const totalPend=all.filter(c=>c.status!=='paid').reduce((s,c)=>s+parseFloat(c.comm),0);
+  document.getElementById('admCommPaid').textContent=totalPaid.toFixed(2)+'€';
+  document.getElementById('admCommPend').textContent=totalPend.toFixed(2)+'€';
+  document.getElementById('admCommList').innerHTML=all.slice(0,10).map(c=>`
+    <div class="comm-item">
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <span class="comm-plate">${esc(c.reg)}</span>
+        <span style="font-size:10px;color:var(--mu)">${esc(c.from?.split(' ')[0]||'')}→${esc(c.to?.split(' ')[0]||'')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="comm-amount">${c.comm}€</span>
+        <span class="comm-status ${c.status==='paid'?'cs-paid':'cs-pend'}">${c.status==='paid'?'Платено':'Чака'}</span>
+        ${c.status!=='paid'?`<button class="btn btn-gr btn-xs" onclick="markCommPaid('${c.orderId}')">✓</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+async function markCommPaid(orderId){
+  const c=await stGet('comm:'+orderId);if(!c)return;
+  c.status='paid';c.paidAt=new Date().toISOString();
+  await stSet('comm:'+orderId,c);
+  renderAdmComm();
+}
+
+async function admAction(reg,status){
+  const p=await stGet('profile:'+reg);if(!p)return;
+  p.status=status;p.updatedAt=new Date().toISOString();
+  if(status==='approved')p.online=false;
+  await stSet('profile:'+reg,p);
+  renderAdm();renderPass();
+}
+
+async function admDel(reg){
+  if(!confirm(`Изтрий ${reg}?`))return;
+  await stDel('profile:'+reg);renderAdm();renderPass();
+}
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+function esc(s){return(s||'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
 init();
 </script>
 </body>
