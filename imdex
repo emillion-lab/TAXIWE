@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>TaxiMatch Sofia</title>
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#141414;--card:#1c1c1c;--border:#2a2a2a;
+  --yellow:#f5c518;--yellow-dim:rgba(245,197,24,0.12);--yellow-glow:rgba(245,197,24,0.25);
+  --text:#f0f0f0;--muted:#888;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+  --orange:#f97316;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+
+/* ── TOP BAR ── */
+.topbar{background:#000;border-bottom:3px solid var(--yellow);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:26px;line-height:1}
+.logo-text{font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.logo-text span{color:var(--yellow)}
+.mode-switch{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.mode-btn{padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.15s;white-space:nowrap}
+.mode-btn.active{background:var(--yellow);color:#000}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;flex-direction:column}
+.page.active{display:flex}
+
+/* ── SECTION HEADER ── */
+.sec-header{padding:16px 16px 8px;border-bottom:1px solid var(--border)}
+.sec-title{font-size:20px;font-weight:900;color:var(--yellow);letter-spacing:-0.5px}
+.sec-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── SEARCH (passenger) ── */
+.search-panel{padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.search-row{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:.15s;white-space:nowrap;user-select:none}
+.filter-chip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
+.filter-chip:hover{border-color:var(--muted)}
+.district-sel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;outline:none}
+.district-sel:focus{border-color:var(--yellow)}
+
+/* ── DRIVER CARDS ── */
+.cards-scroll{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.driver-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.15s;position:relative}
+.driver-card:hover{border-color:var(--yellow);background:#212121}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.dc-plate{background:var(--yellow);color:#000;font-family:monospace;font-size:18px;font-weight:900;padding:3px 10px;border-radius:6px;letter-spacing:1px;white-space:nowrap}
+.dc-op{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
+.dc-status{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.dc-online{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px}
+.online-yes{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
+.online-no{background:rgba(136,136,136,0.1);color:var(--muted);border:1px solid var(--border)}
+.dc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid}
+.tag-smoke{background:rgba(249,115,22,0.12);color:var(--orange);border-color:rgba(249,115,22,0.3)}
+.tag-nosm{background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.25)}
+.tag-pet{background:rgba(59,130,246,0.1);color:var(--blue);border-color:rgba(59,130,246,0.25)}
+.tag-music{background:rgba(168,85,247,0.1);color:#a855f7;border-color:rgba(168,85,247,0.25)}
+.tag-quiet{background:rgba(136,136,136,0.1);color:var(--muted);border-color:var(--border)}
+.tag-child{background:rgba(245,197,24,0.1);color:var(--yellow);border-color:rgba(245,197,24,0.25)}
+.tag-card{background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.25)}
+.tag-cash{background:rgba(136,136,136,0.1);color:var(--muted);border-color:var(--border)}
+.tag-minivan{background:rgba(59,130,246,0.1);color:var(--blue);border-color:rgba(59,130,246,0.25)}
+.dc-bio{font-size:12px;color:#bbb;line-height:1.5;margin-bottom:6px}
+.dc-hours{font-size:11px;color:var(--muted);font-weight:600}
+.dc-districts{font-size:11px;color:var(--yellow);font-weight:700;margin-top:3px}
+.dc-model{font-size:12px;color:var(--muted);font-weight:600}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-msg{font-size:14px;font-weight:600}
+
+/* ── DRIVER PAGE ── */
+.driver-page-inner{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+
+/* ── VERIFY BOX ── */
+.verify-box{background:var(--card);border:2px dashed var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.verify-box.verified{border:2px solid var(--green);background:rgba(34,197,94,0.04)}
+.verify-box.verified .verify-title{color:var(--green)}
+.verify-title{font-size:16px;font-weight:900;color:var(--yellow)}
+.verify-sub{font-size:12px;color:var(--muted);line-height:1.5}
+.verify-result{font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);width:100%;text-align:center}
+.verify-result.err{background:rgba(239,68,68,0.1);color:var(--red);border-color:rgba(239,68,68,0.3)}
+
+/* ── FORM ELEMENTS ── */
+.form-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.form-title{font-size:12px;font-weight:900;color:var(--yellow);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.form-row{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;color:var(--muted);font-weight:700}
+.form-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;width:100%;font-family:inherit}
+.form-input:focus{border-color:var(--yellow)}
+textarea.form-input{resize:vertical;min-height:70px}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.fchip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
+.fchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
+.hour-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.hchip{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 2px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
+.hchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
+.district-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.dchip{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 4px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);transition:.12s;user-select:none}
+.dchip.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.toggle-label{font-size:13px;font-weight:700;color:var(--text)}
+.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;position:relative;transition:.2s;border:none;flex-shrink:0}
+.toggle.on{background:var(--yellow)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.toggle.on::after{left:23px;background:#000}
+
+/* ── BUTTONS ── */
+.btn{padding:13px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;border:none;transition:.15s;width:100%;text-align:center}
+.btn-primary{background:var(--yellow);color:#000}
+.btn-primary:hover{background:#ffd700}
+.btn-primary:active{background:#e6b800}
+.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--yellow);color:var(--yellow)}
+.btn-danger{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+.btn-sm{padding:7px 14px;font-size:13px;width:auto;border-radius:8px}
+.plate-input{font-family:monospace;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;text-align:center}
+
+/* ── LOADING ── */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(245,197,24,0.3);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:var(--muted);font-size:13px;font-weight:600}
+
+/* ── MODAL / OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.overlay.hidden{display:none}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px 16px 12px 12px;padding:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.modal-title{font-size:18px;font-weight:900;color:var(--yellow)}
+.modal-plate{font-family:monospace;font-size:22px;font-weight:900;background:var(--yellow);color:#000;padding:4px 12px;border-radius:6px;display:inline-block;letter-spacing:2px}
+.modal-section{display:flex;flex-direction:column;gap:6px}
+.modal-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.modal-val{font-size:14px;font-weight:600;line-height:1.5}
+.modal-tags{display:flex;flex-wrap:wrap;gap:5px}
+.modal-close{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;color:var(--text);width:100%}
+.modal-close:hover{border-color:var(--yellow);color:var(--yellow)}
+
+/* ── STATUS DOTS ── */
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
+.dot-green{background:var(--green)}
+.dot-gray{background:var(--muted)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🚕</div>
+    <div class="logo-text">Taxi<span>Match</span> Sofia</div>
+  </div>
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btnPassenger" onclick="switchMode('passenger')">🔍 Пътник</button>
+    <button class="mode-btn" id="btnDriver" onclick="switchMode('driver')">🚕 Шофьор</button>
+  </div>
+</div>
+
+<!-- ══════════════ PASSENGER PAGE ══════════════ -->
+<div class="page active" id="pagePassenger">
+  <div class="sec-header">
+    <div class="sec-title">Намери своето такси</div>
+    <div class="sec-sub">Само регистрирани шофьори от официалния регистър</div>
+  </div>
+
+  <div class="search-panel">
+    <div class="search-row" id="smokeFilters">
+      <div class="filter-chip" data-f="smoke_ok" onclick="toggleFilter(this)">🚬 Пушач ОК</div>
+      <div class="filter-chip" data-f="no_smoke" onclick="toggleFilter(this)">🚭 Непушач</div>
+      <div class="filter-chip" data-f="pet_ok" onclick="toggleFilter(this)">🐾 Животни ОК</div>
+      <div class="filter-chip" data-f="child_seat" onclick="toggleFilter(this)">👶 Детско</div>
+      <div class="filter-chip" data-f="card_pay" onclick="toggleFilter(this)">💳 Карта</div>
+      <div class="filter-chip" data-f="minivan" onclick="toggleFilter(this)">🚐 Ван</div>
+      <div class="filter-chip" data-f="quiet" onclick="toggleFilter(this)">🔇 Тихо</div>
+      <div class="filter-chip" data-f="online_now" onclick="toggleFilter(this)">🟢 В момента</div>
+    </div>
+    <div class="search-row">
+      <select class="district-sel" id="districtFilter" onchange="renderCards()">
+        <option value="">📍 Всички райони</option>
+        <option>Подуяне</option><option>Слатина</option><option>Красно село</option>
+        <option>Надежда</option><option>Люлин</option><option>Студентски</option>
+        <option>Триадица</option><option>Средец</option><option>Сердика</option>
+        <option>Искър</option><option>Младост</option><option>Витоша</option>
+        <option>Панчарево</option><option>Банкя</option><option>Лозенец</option>
+        <option>Изгрев</option><option>Оборище</option><option>Илинден</option>
+        <option>Овча купел</option><option>Красна поляна</option><option>Нови Искър</option>
+        <option>Кремиковци</option><option>Връбница</option><option>Военна рампа</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cards-scroll" id="cardsScroll">
+    <div class="loading-row" id="loadingMsg"><div class="spinner"></div>Зареждане на профили…</div>
+  </div>
+</div>
+
+<!-- ══════════════ DRIVER PAGE ══════════════ -->
+<div class="page" id="pageDriver">
+  <div class="sec-header">
+    <div class="sec-title">Моят профил</div>
+    <div class="sec-sub">Управлявай видимостта си за пътници</div>
+  </div>
+
+  <div class="driver-page-inner" id="driverInner">
+
+    <!-- STEP 1: Verify -->
+    <div id="stepVerify">
+      <div class="verify-box" id="verifyBox">
+        <div style="font-size:36px">🪪</div>
+        <div class="verify-title">Верификация на шофьор</div>
+        <div class="verify-sub">Въведи регистрационния номер на таксито, за да потвърдиш самоличността си спрямо официалния регистър.</div>
+        <input class="form-input plate-input" id="verifyPlate" placeholder="СО 1234 АВ" maxlength="12"
+          oninput="this.value=this.value.toUpperCase().replace(/[^А-ЯA-Z0-9]/g,'')" style="max-width:220px"/>
+        <button class="btn btn-primary btn-sm" onclick="verifyPlate()" id="verifyBtn">Провери →</button>
+        <div id="verifyResult" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Profile form (shown after verify) -->
+    <div id="stepProfile" style="display:none;flex-direction:column;gap:14px">
+
+      <!-- verified badge -->
+      <div class="verify-box verified" id="verifiedBadge">
+        <div style="font-size:28px">✅</div>
+        <div class="verify-title" id="verifiedTitle">Верифициран шофьор</div>
+        <div id="verifiedPlateDisplay" style="font-size:13px;color:var(--muted);font-weight:600"></div>
+      </div>
+
+      <!-- Online toggle -->
+      <div class="form-section">
+        <div class="form-title">Видимост</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Показвай ме на пътници</span>
+          <button class="toggle" id="toggleOnline" onclick="toggleOnline()"></button>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="form-section">
+        <div class="form-title">За теб</div>
+        <div class="form-row">
+          <div class="form-label">Кратко представяне (видимо за пътници)</div>
+          <textarea class="form-input" id="fBio" placeholder="Напр: Опитен шофьор с 10 години стаж. Спокоен и точен. Няма проблем с пушещи клиенти…" rows="3"></textarea>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="form-section">
+        <div class="form-title">Предпочитания / Оборудване</div>
+
+        <div class="form-row">
+          <div class="form-label">Пушене в колата</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="smoke_ok" onclick="togglePref(this)">🚬 Пушач ОК</div>
+            <div class="fchip" data-pref="no_smoke" onclick="togglePref(this)">🚭 Непушач</div>
+            <div class="fchip" data-pref="smoke_outside" onclick="togglePref(this)">⏸ Само пауза</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Животни</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="pet_ok" onclick="togglePref(this)">🐾 Домашни любимци ОК</div>
+            <div class="fchip" data-pref="no_pet" onclick="togglePref(this)">🚫 Без животни</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Музика</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="music_pop" onclick="togglePref(this)">🎵 Поп/Чалга</div>
+            <div class="fchip" data-pref="music_radio" onclick="togglePref(this)">📻 Радио</div>
+            <div class="fchip" data-pref="music_client" onclick="togglePref(this)">🎧 По желание</div>
+            <div class="fchip" data-pref="quiet" onclick="togglePref(this)">🔇 Тихо</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Допълнително</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="child_seat" onclick="togglePref(this)">👶 Детско столче</div>
+            <div class="fchip" data-pref="card_pay" onclick="togglePref(this)">💳 Плащане с карта</div>
+            <div class="fchip" data-pref="minivan" onclick="togglePref(this)">🚐 Ван/Повече място</div>
+            <div class="fchip" data-pref="english" onclick="togglePref(this)">🇬🇧 Говоря английски</div>
+            <div class="fchip" data-pref="luggage" onclick="togglePref(this)">🧳 Голям багаж ОК</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Стил на шофиране</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="drive_calm" onclick="togglePref(this)">🐢 Спокоен</div>
+            <div class="fchip" data-pref="drive_fast" onclick="togglePref(this)">⚡ Бърз</div>
+            <div class="fchip" data-pref="drive_gps" onclick="togglePref(this)">📍 Следвам GPS</div>
+            <div class="fchip" data-pref="drive_local" onclick="togglePref(this)">🗺 Познавам града</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="form-section">
+        <div class="form-title">Работни часове</div>
+        <div class="form-label" style="margin-bottom:4px">Предпочитано работно време (може повече от 1)</div>
+        <div class="hour-grid" id="hourGrid"></div>
+      </div>
+
+      <!-- Districts -->
+      <div class="form-section">
+        <div class="form-title">Работни райони</div>
+        <div class="form-label" style="margin-bottom:4px">Районите, в които предпочиташ да работиш</div>
+        <div class="district-grid" id="districtGrid"></div>
+      </div>
+
+      <!-- Contact -->
+      <div class="form-section">
+        <div class="form-title">Контакт (незадължително)</div>
+        <div class="form-row">
+          <div class="form-label">Телефон (вижда се само при отворен профил)</div>
+          <input class="form-input" id="fPhone" placeholder="08X XXX XXXX" type="tel" maxlength="20"/>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Viber / WhatsApp</div>
+          <div class="chips-row">
+            <div class="fchip" data-pref="viber" onclick="togglePref(this)">💜 Viber</div>
+            <div class="fchip" data-pref="whatsapp" onclick="togglePref(this)">💚 WhatsApp</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <button class="btn btn-primary" id="saveBtn" onclick="saveProfile()">💾 Запази профила</button>
+      <button class="btn btn-secondary" onclick="logoutDriver()" style="margin-top:-6px">Изход от профила</button>
+      <div id="saveMsg" style="text-align:center;font-size:13px;color:var(--green);display:none;font-weight:700">✓ Профилът е запазен!</div>
+      <div style="height:20px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ MODAL (passenger view) ══════════════ -->
+<div class="overlay hidden" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="modal-title">Профил на шофьора</div>
+      <div id="modalOnline"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div class="modal-plate" id="modalPlate">—</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:2px" id="modalOp">—</div>
+      <div style="font-size:12px;color:var(--muted)" id="modalModel">—</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">За шофьора</div>
+      <div class="modal-val" id="modalBio">—</div>
+    </div>
+    <div class="modal-section" id="modalTagsSection">
+      <div class="modal-label">Предпочитания</div>
+      <div class="modal-tags" id="modalTags"></div>
+    </div>
+    <div class="modal-section" id="modalHoursSection">
+      <div class="modal-label">Работни часове</div>
+      <div class="modal-val" id="modalHours">—</div>
+    </div>
+    <div class="modal-section" id="modalDistSection">
+      <div class="modal-label">Работни райони</div>
+      <div class="modal-val" id="modalDist">—</div>
+    </div>
+    <div class="modal-section" id="modalPhoneSection" style="display:none">
+      <div class="modal-label">Телефон</div>
+      <div class="modal-val" id="modalPhone">—</div>
+    </div>
+    <button class="modal-close" onclick="closeModal()">Затвори</button>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   CONSTANTS
+───────────────────────────────────────────── */
+const SOFIA_JSON_URL='https://emillion-lab.github.io/TAXI/taxi_data_Sofia8.6.26.json';
+
+const HOURS=[
+  '00–04','04–08','08–12','12–16','16–20','20–24',
+  'Нощен','Сутрин','Обед','Следобед','Вечер','24/7'
+];
+const DISTRICTS=[
+  'Подуяне','Слатина','Красно село','Надежда','Люлин','Студентски',
+  'Триадица','Средец','Сердика','Искър','Младост','Витоша',
+  'Панчарево','Банкя','Лозенец','Изгрев','Оборище','Илинден',
+  'Овча купел','Красна поляна','Нови Искър','Кремиковци','Връбница','Летище'
+];
+const TAG_META={
+  smoke_ok:{label:'🚬 Пушач ОК',cls:'tag-smoke'},
+  smoke_outside:{label:'⏸ Пауза',cls:'tag-smoke'},
+  no_smoke:{label:'🚭 Непушач',cls:'tag-nosm'},
+  pet_ok:{label:'🐾 Животни ОК',cls:'tag-pet'},
+  no_pet:{label:'🚫 Без животни',cls:'tag-quiet'},
+  music_pop:{label:'🎵 Поп/Чалга',cls:'tag-music'},
+  music_radio:{label:'📻 Радио',cls:'tag-music'},
+  music_client:{label:'🎧 По желание',cls:'tag-music'},
+  quiet:{label:'🔇 Тихо',cls:'tag-quiet'},
+  child_seat:{label:'👶 Детско',cls:'tag-child'},
+  card_pay:{label:'💳 Карта',cls:'tag-card'},
+  minivan:{label:'🚐 Ван',cls:'tag-minivan'},
+  english:{label:'🇬🇧 English',cls:'tag-pet'},
+  luggage:{label:'🧳 Багаж',cls:'tag-quiet'},
+  drive_calm:{label:'🐢 Спокоен',cls:'tag-quiet'},
+  drive_fast:{label:'⚡ Бърз',cls:'tag-music'},
+  drive_gps:{label:'📍 GPS',cls:'tag-quiet'},
+  drive_local:{label:'🗺 Познава',cls:'tag-pet'},
+  viber:{label:'💜 Viber',cls:'tag-music'},
+  whatsapp:{label:'💚 WhatsApp',cls:'tag-card'},
+};
+
+/* ─────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────── */
+let sofiaRegistry=new Map(); // reg -> {op, model}
+let profiles={};             // reg -> profile object (from Claude API)
+let conversationHistory=[];  // Claude API conversation state
+let currentDriverReg=null;
+let activeFilters=new Set();
+let currentProfile={prefs:new Set(),hours:new Set(),districts:new Set(),online:false,bio:'',phone:''};
+
+/* ─────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────── */
+async function init(){
+  buildHourGrid();
+  buildDistrictGrid();
+  await loadSofiaRegistry();
+  await loadProfilesFromAPI();
+  renderCards();
+}
+
+/* ─────────────────────────────────────────────
+   LOAD SOFIA REGISTRY (for verification)
+───────────────────────────────────────────── */
+async function loadSofiaRegistry(){
+  try{
+    const res=await fetch(SOFIA_JSON_URL);
+    if(!res.ok) return;
+    const data=await res.json();
+    const list=Array.isArray(data)?data:(data.data||data.items||[]);
+    list.forEach(item=>{
+      const op=(item.operatorName||'').trim();
+      const vList=item.taxiLicensesVehiclesDrivers||item.vehicles||[];
+      vList.forEach(vd=>{
+        const v=vd.taxiLicenseVehicle||vd.vehicle||vd||{};
+        const reg=normReg(v.registerNumber||v.regNumber||'');
+        if(reg&&!sofiaRegistry.has(reg))
+          sofiaRegistry.set(reg,{op, model:(v.markAndModel||v.model||'—').trim()});
+      });
+    });
+    console.log('Registry loaded:',sofiaRegistry.size,'vehicles');
+  }catch(e){ console.warn('Registry fetch failed:',e.message); }
+}
+
+function normReg(s){ return (s||'').toUpperCase().replace(/\s+/g,'').trim(); }
+
+/* ─────────────────────────────────────────────
+   CLAUDE API — Load profiles (init conversation)
+───────────────────────────────────────────── */
+async function loadProfilesFromAPI(){
+  document.getElementById('loadingMsg').style.display='flex';
+  try{
+    // First message: ask Claude to initialize or return existing state
+    const sys=`You are the backend of TaxiMatch Sofia — a taxi driver profile database.
+You ONLY respond with valid JSON. Never add any explanation or markdown.
+Your job: maintain a JSON object called "profiles" where keys are Bulgarian taxi plate numbers.
+Each profile has: { reg, op, model, online, bio, phone, prefs[], hours[], districts[], updatedAt }
+On first call, return: {"profiles":{}, "action":"init"}
+When asked to load, return the full current profiles object.`;
+
+    const resp=await callClaude(sys,[{role:'user',content:'LOAD_PROFILES'}]);
+    const parsed=safeParseJSON(resp);
+    if(parsed&&parsed.profiles) profiles=parsed.profiles;
+    // seed conversation with the state so future calls preserve it
+    conversationHistory=[
+      {role:'user',content:'LOAD_PROFILES'},
+      {role:'assistant',content:JSON.stringify({profiles})}
+    ];
+  }catch(e){ console.warn('API init failed, using empty profiles'); }
+  document.getElementById('loadingMsg').style.display='none';
+}
+
+/* ─────────────────────────────────────────────
+   CLAUDE API — Save / verify
+───────────────────────────────────────────── */
+const SYS_PROMPT=`You are the backend database of TaxiMatch Sofia. You ONLY respond with valid JSON, no markdown, no explanation.
+Current state is provided in conversation history.
+Commands you handle:
+- SAVE_PROFILE {reg, profile} → merge profile into profiles, return {"ok":true,"profiles":{...full...}}
+- VERIFY_PLATE {reg} → check if reg exists in provided registry list, return {"found":bool,"op":"...","model":"..."}
+- GET_PROFILES → return {"profiles":{...}}
+Always return the full updated profiles object on any mutation.`;
+
+async function callClaude(systemOverride, messages){
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:4000,
+      system:systemOverride||SYS_PROMPT,
+      messages
+    })
+  });
+  const data=await res.json();
+  return data.content?.find(b=>b.type==='text')?.text||'{}';
+}
+
+function safeParseJSON(s){
+  try{ return JSON.parse(s); }
+  catch{
+    const m=s.match(/\{[\s\S]*\}/);
+    if(m) try{ return JSON.parse(m[0]); }catch{}
+    return null;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   VERIFY PLATE
+───────────────────────────────────────────── */
+async function verifyPlate(){
+  const raw=document.getElementById('verifyPlate').value;
+  const reg=normReg(raw);
+  if(!reg){ alert('Въведи регистрационен номер'); return; }
+
+  const btn=document.getElementById('verifyBtn');
+  btn.textContent='…'; btn.disabled=true;
+  const resEl=document.getElementById('verifyResult');
+  resEl.style.display='block';
+
+  // Check locally against registry (fast)
+  let info=sofiaRegistry.get(reg);
+  if(!info){
+    // Try slight variations (common formatting differences)
+    for(const [k,v] of sofiaRegistry){
+      if(k.replace(/\s/g,'')===reg.replace(/\s/g,'')){info=v;break;}
+    }
+  }
+
+  if(info){
+    resEl.className='verify-result';
+    resEl.innerHTML=`✅ Намерен в регистъра<br><strong>${reg}</strong> — ${info.op}<br><em style="font-size:11px;color:var(--muted)">${info.model}</em>`;
+    setTimeout(()=>activateDriverProfile(reg,info),1200);
+  } else {
+    resEl.className='verify-result err';
+    resEl.innerHTML=`❌ Не е намерен в официалния регистър на активни таксита в София.<br><span style="font-size:11px">Само регистрирани автомобили могат да създадат профил.</span>`;
+  }
+  btn.textContent='Провери →'; btn.disabled=false;
+}
+
+function activateDriverProfile(reg, info){
+  currentDriverReg=reg;
+  // Load existing profile if any
+  const existing=profiles[reg];
+  if(existing){
+    currentProfile={
+      prefs:new Set(existing.prefs||[]),
+      hours:new Set(existing.hours||[]),
+      districts:new Set(existing.districts||[]),
+      online:existing.online||false,
+      bio:existing.bio||'',
+      phone:existing.phone||''
+    };
+    applyProfileToForm();
+  } else {
+    currentProfile={prefs:new Set(),hours:new Set(),districts:new Set(),online:false,bio:'',phone:''};
+  }
+  document.getElementById('stepVerify').style.display='none';
+  document.getElementById('stepProfile').style.display='flex';
+  document.getElementById('verifiedTitle').textContent=`${reg}`;
+  document.getElementById('verifiedPlateDisplay').textContent=`${info.op} · ${info.model}`;
+  updateOnlineToggle();
+}
+
+function applyProfileToForm(){
+  document.getElementById('fBio').value=currentProfile.bio;
+  document.getElementById('fPhone').value=currentProfile.phone;
+  // prefs chips
+  document.querySelectorAll('[data-pref]').forEach(el=>{
+    el.classList.toggle('on',currentProfile.prefs.has(el.dataset.pref));
+  });
+  // hours
+  document.querySelectorAll('[data-hour]').forEach(el=>{
+    el.classList.toggle('on',currentProfile.hours.has(el.dataset.hour));
+  });
+  // districts
+  document.querySelectorAll('[data-dist]').forEach(el=>{
+    el.classList.toggle('on',currentProfile.districts.has(el.dataset.dist));
+  });
+}
+
+/* ─────────────────────────────────────────────
+   TOGGLE HELPERS
+───────────────────────────────────────────── */
+function togglePref(el){
+  const p=el.dataset.pref;
+  // mutual exclusions
+  const mutex={smoke_ok:['no_smoke'],no_smoke:['smoke_ok','smoke_outside'],pet_ok:['no_pet'],no_pet:['pet_ok']};
+  if(mutex[p]) mutex[p].forEach(x=>{ currentProfile.prefs.delete(x); document.querySelector(`[data-pref="${x}"]`)?.classList.remove('on'); });
+  if(currentProfile.prefs.has(p)){ currentProfile.prefs.delete(p); el.classList.remove('on'); }
+  else{ currentProfile.prefs.add(p); el.classList.add('on'); }
+}
+
+function toggleOnline(){
+  currentProfile.online=!currentProfile.online;
+  updateOnlineToggle();
+}
+
+function updateOnlineToggle(){
+  document.getElementById('toggleOnline').classList.toggle('on',currentProfile.online);
+}
+
+function toggleFilter(el){
+  const f=el.dataset.f;
+  if(activeFilters.has(f)){ activeFilters.delete(f); el.classList.remove('on'); }
+  else{ activeFilters.add(f); el.classList.add('on'); }
+  renderCards();
+}
+
+/* ─────────────────────────────────────────────
+   BUILD HOUR / DISTRICT GRIDS
+───────────────────────────────────────────── */
+function buildHourGrid(){
+  const g=document.getElementById('hourGrid');
+  g.innerHTML=HOURS.map(h=>`<div class="hchip" data-hour="${h}" onclick="toggleHour(this)">${h}</div>`).join('');
+}
+function buildDistrictGrid(){
+  const g=document.getElementById('districtGrid');
+  g.innerHTML=DISTRICTS.map(d=>`<div class="dchip" data-dist="${d}" onclick="toggleDist(this)">${d}</div>`).join('');
+}
+function toggleHour(el){
+  const h=el.dataset.hour;
+  if(currentProfile.hours.has(h)){ currentProfile.hours.delete(h); el.classList.remove('on'); }
+  else{ currentProfile.hours.add(h); el.classList.add('on'); }
+}
+function toggleDist(el){
+  const d=el.dataset.dist;
+  if(currentProfile.districts.has(d)){ currentProfile.districts.delete(d); el.classList.remove('on'); }
+  else{ currentProfile.districts.add(d); el.classList.add('on'); }
+}
+
+/* ─────────────────────────────────────────────
+   SAVE PROFILE
+───────────────────────────────────────────── */
+async function saveProfile(){
+  if(!currentDriverReg) return;
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='💾 Запазване…'; btn.disabled=true;
+
+  const profile={
+    reg:currentDriverReg,
+    op: (sofiaRegistry.get(currentDriverReg)||{}).op||'',
+    model:(sofiaRegistry.get(currentDriverReg)||{}).model||'',
+    online:currentProfile.online,
+    bio:document.getElementById('fBio').value.trim(),
+    phone:document.getElementById('fPhone').value.trim(),
+    prefs:[...currentProfile.prefs],
+    hours:[...currentProfile.hours],
+    districts:[...currentProfile.districts],
+    updatedAt:new Date().toISOString()
+  };
+
+  try{
+    // Update via Claude API — it persists the state in conversation memory
+    conversationHistory.push({role:'user',content:`SAVE_PROFILE ${JSON.stringify({reg:currentDriverReg,profile})}`});
+    const resp=await callClaude(null,conversationHistory);
+    const parsed=safeParseJSON(resp);
+    if(parsed?.profiles){
+      profiles=parsed.profiles;
+      conversationHistory.push({role:'assistant',content:resp});
+    } else {
+      // fallback: save locally in profiles object
+      profiles[currentDriverReg]=profile;
+    }
+    renderCards();
+    const msg=document.getElementById('saveMsg');
+    msg.style.display='block';
+    setTimeout(()=>msg.style.display='none',2500);
+  }catch(e){
+    // If API fails, save locally and warn
+    profiles[currentDriverReg]=profile;
+    renderCards();
+    console.warn('API save failed, saved locally only');
+  }
+  btn.textContent='💾 Запази профила'; btn.disabled=false;
+}
+
+function logoutDriver(){
+  currentDriverReg=null;
+  document.getElementById('stepVerify').style.display='block';
+  document.getElementById('stepProfile').style.display='none';
+  document.getElementById('verifyPlate').value='';
+  document.getElementById('verifyResult').style.display='none';
+}
+
+/* ─────────────────────────────────────────────
+   RENDER CARDS (passenger)
+───────────────────────────────────────────── */
+function renderCards(){
+  const scroll=document.getElementById('cardsScroll');
+  const distFilter=document.getElementById('districtFilter').value;
+
+  const all=Object.values(profiles);
+  // Only show non-hidden profiles (show all if no filter, hide explicitly offline only when online_now filter active)
+  let visible=all.filter(p=>{
+    if(activeFilters.has('online_now')&&!p.online) return false;
+    if(distFilter&&!(p.districts||[]).includes(distFilter)) return false;
+    for(const f of activeFilters){
+      if(f==='online_now') continue;
+      if(!(p.prefs||[]).includes(f)) return false;
+    }
+    return true;
+  });
+
+  // Sort: online first, then by updatedAt
+  visible.sort((a,b)=>{
+    if(a.online&&!b.online) return -1;
+    if(!a.online&&b.online) return 1;
+    return new Date(b.updatedAt||0)-new Date(a.updatedAt||0);
+  });
+
+  if(!visible.length){
+    scroll.innerHTML=`<div class="empty"><div class="empty-icon">🚕</div><div class="empty-msg">${all.length?'Няма шофьори с тези предпочитания.<br>Промени филтрите.':'Все още няма регистрирани шофьори.<br>Бъди първият!'}</div></div>`;
+    return;
+  }
+
+  scroll.innerHTML=visible.map(p=>{
+    const tags=(p.prefs||[]).map(key=>TAG_META[key]?`<span class="tag ${TAG_META[key].cls}">${TAG_META[key].label}</span>`:'').filter(Boolean).join('');
+    const hoursStr=(p.hours||[]).join(' · ')||'';
+    const distStr=(p.districts||[]).slice(0,4).join(', ')+(p.districts?.length>4?'…':'');
+    const onlineCls=p.online?'online-yes':'online-no';
+    const onlineTxt=p.online?'<span class="dot dot-green"></span>В момента':'Офлайн';
+    return `<div class="driver-card" onclick="openModal('${p.reg}')">
+      <div class="dc-top">
+        <div>
+          <div class="dc-plate">${p.reg}</div>
+          <div class="dc-op">${p.op||''}</div>
+          <div class="dc-model">${p.model||''}</div>
+        </div>
+        <div class="dc-status">
+          <span class="dc-online ${onlineCls}">${onlineTxt}</span>
+        </div>
+      </div>
+      ${tags?`<div class="dc-tags">${tags}</div>`:''}
+      ${p.bio?`<div class="dc-bio">${escHtml(p.bio)}</div>`:''}
+      ${hoursStr?`<div class="dc-hours">🕐 ${hoursStr}</div>`:''}
+      ${distStr?`<div class="dc-districts">📍 ${distStr}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ─────────────────────────────────────────────
+   MODAL
+───────────────────────────────────────────── */
+function openModal(reg){
+  const p=profiles[reg]; if(!p) return;
+  document.getElementById('modalPlate').textContent=p.reg;
+  document.getElementById('modalOp').textContent=p.op||'';
+  document.getElementById('modalModel').textContent=p.model||'';
+  document.getElementById('modalBio').textContent=p.bio||'Няма добавено описание.';
+  const onlineEl=document.getElementById('modalOnline');
+  onlineEl.innerHTML=p.online?'<span class="dc-online online-yes"><span class="dot dot-green"></span>В момента</span>':'<span class="dc-online online-no">Офлайн</span>';
+  // Tags
+  const tags=(p.prefs||[]).map(key=>TAG_META[key]?`<span class="tag ${TAG_META[key].cls}">${TAG_META[key].label}</span>`:'').filter(Boolean).join('');
+  document.getElementById('modalTags').innerHTML=tags||'<span style="font-size:12px;color:var(--muted)">Не са посочени</span>';
+  // Hours
+  const hrs=(p.hours||[]).join(' · ');
+  document.getElementById('modalHours').textContent=hrs||'Не е посочено';
+  // Districts
+  const dsts=(p.districts||[]).join(', ');
+  document.getElementById('modalDist').textContent=dsts||'Не е посочено';
+  // Phone
+  if(p.phone){
+    document.getElementById('modalPhone').textContent=p.phone;
+    document.getElementById('modalPhoneSection').style.display='flex';
+  } else {
+    document.getElementById('modalPhoneSection').style.display='none';
+  }
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+function closeModal(e){
+  if(!e||e.target===document.getElementById('overlay')||e.target.classList.contains('modal-close'))
+    document.getElementById('overlay').classList.add('hidden');
+}
+
+/* ─────────────────────────────────────────────
+   MODE SWITCH
+───────────────────────────────────────────── */
+function switchMode(m){
+  document.getElementById('pagePassenger').classList.toggle('active',m==='passenger');
+  document.getElementById('pageDriver').classList.toggle('active',m==='driver');
+  document.getElementById('btnPassenger').classList.toggle('active',m==='passenger');
+  document.getElementById('btnDriver').classList.toggle('active',m==='driver');
+}
+
+/* ─────────────────────────────────────────────
+   START
+───────────────────────────────────────────── */
+init();
+</script>
+</body>
+</html>
